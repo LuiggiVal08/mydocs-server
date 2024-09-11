@@ -1,0 +1,10 @@
+{
+    "root": true,
+    "env": { "browser": true, "es2020": true },
+    "parserOptions": {
+        "proyect": "./tsconfig.json"
+      },"extends":[
+        "./node_modules/ts-standard/eslintrc.json"
+      ],
+      "rules": {}
+}
