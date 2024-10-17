@@ -7,15 +7,23 @@ import jwt from '@/helpers/jwt';
 import { compareSync } from 'bcryptjs';
 import { z } from 'zod';
 import logger from '@/config/logger';
-import crypto from 'crypto'
+import crypto from 'crypto';
 import Address, { AddressInput } from '../models/address';
+import { AuthenticatedRequest } from '@/types/auth';
+
 const loginSchema = z.object({
-    username: z.string()
-        .min(4, { message: 'Username is required and must be at least 4 characters long' })
+    username: z
+        .string()
+        .min(4, {
+            message: 'Username is required and must be at least 4 characters long',
+        })
         .max(16, { message: 'Username must be at most 16 characters long' }),
 
-    password: z.string()
-        .min(4, { message: 'Password is required and must be at least 4 characters long' })
+    password: z
+        .string()
+        .min(4, {
+            message: 'Password is required and must be at least 4 characters long',
+        })
         .max(20, { message: 'Password must be at most 20 characters long' }),
 });
 export default class AdminCtrl {
@@ -24,9 +32,7 @@ export default class AdminCtrl {
             const validationResult = loginSchema.safeParse(req.body);
 
             if (!validationResult.success) {
-                const errorMessages = validationResult.error.errors.map(
-                    (err) => `${err.path[0]}: ${err.message}`
-                );
+                const errorMessages = validationResult.error.errors.map((err) => `${err.path[0]}: ${err.message}`);
                 return res.status(400).json({ message: errorMessages.join(', ') });
             }
 
@@ -39,31 +45,63 @@ export default class AdminCtrl {
 
             const isAdmin = await Admin.findOne({
                 where: { user_id: user.dataValues.id },
-                attributes: { exclude: ['updatedAt', 'createdAt', 'user_id'] },
+                attributes: {
+                    exclude: ['updatedAt', 'createdAt', 'user_id', 'token'],
+                },
             });
 
             if (!isAdmin) {
                 return res.status(403).json({ message: 'User is not an admin' });
             }
-
+            if (!isAdmin.dataValues.status) {
+                return res.status(403).json({
+                    message: 'Access revoked by a superior administrator',
+                });
+            }
             if (!compareSync(password, user.dataValues.password)) {
                 return res.status(401).json({ message: 'Incorrect password' });
             }
 
-            const token = await jwt({ userId: user.dataValues.id, roleId: isAdmin.dataValues.role });
+            const token = await jwt({
+                userId: user.dataValues.id,
+                roleId: isAdmin.dataValues.role,
+            });
+            const tokenExpiration = Date.now() + 15 * 60 * 1000; // 15 minutos
             res.cookie('authToken', token, {
                 httpOnly: true,
-                expires: new Date(Date.now() + 3 * 60 * 1000), // 3 minutos
+                // sameSite: 'none',
+                expires: new Date(tokenExpiration),
             });
 
-            res.status(200).json({ admin: isAdmin });
+            res.status(200).json({
+                body: {
+                    user: {
+                        name: user.dataValues.name,
+                        lastname: user.dataValues.lastname,
+                        email: user.dataValues.email,
+                        ...isAdmin.dataValues,
+                    },
+                    tokenExpiration,
+                },
+            });
         } catch (error) {
             logger.error(`Error in login: ${error}`);
             res.status(500).json({ message: 'Internal Server Error' });
         }
     }
+    static async logout(_req: Request, res: Response) {
+        try {
+            // Limpiar la cookie que contiene el token
+            res.clearCookie('authToken');
 
-    static async createAdmin(req: Request, res: Response) {
+            // Responder con éxito
+            res.status(200).json({ message: 'Logout successful' });
+        } catch (error) {
+            logger.error(`Error in logout: ${error}`);
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }
+    static async createAdmin(req: AuthenticatedRequest, res: Response) {
         const t = await dbConn.transaction();
         try {
             const { user, roleId, address }: { user: UserInput; roleId: number; address: AddressInput } = req.body;
@@ -73,14 +111,24 @@ export default class AdminCtrl {
             }
 
             // Crear o buscar dirección
-            let addressCreate = await Address.findOne({ where: { address: address.address, municipality_id: address.municipality_id } });
+            let addressCreate = await Address.findOne({
+                where: {
+                    address: address.address,
+                    municipality_id: address.municipality_id,
+                },
+            });
 
             if (!addressCreate) {
-                addressCreate = await Address.create(address, { transaction: t });
+                addressCreate = await Address.create(address, {
+                    transaction: t,
+                });
             }
 
             // Crear usuario con la dirección asociada
-            const userCreate = await User.create({ ...user, address_id: addressCreate.dataValues.id }, { transaction: t });
+            const userCreate = await User.create(
+                { ...user, address_id: addressCreate.dataValues.id },
+                { transaction: t },
+            );
 
             const role = await Role.findByPk(roleId, { transaction: t });
 
@@ -93,11 +141,15 @@ export default class AdminCtrl {
                         role: role.dataValues.id,
                         token, // Puedes guardar el token asociado al admin
                     },
-                    { transaction: t }
+                    { transaction: t },
                 );
 
                 await t.commit();
-                res.status(201).json({ token }); // Enviar token al cliente para completar el registro
+                res.status(201).json({
+                    body: { token },
+                    message: 'Token generado',
+                    tokenExpiration: req.tokenExpiration,
+                }); // Enviar token al cliente para completar el registro
             } else {
                 await t.rollback();
                 res.status(404).json({ message: 'Role not found' });
@@ -125,7 +177,9 @@ export default class AdminCtrl {
             }
 
             // Actualizar usuario con nueva información
-            const user = await User.findOne({ where: { id: admin.dataValues.user_id } });
+            const user = await User.findOne({
+                where: { id: admin.dataValues.user_id },
+            });
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
@@ -153,10 +207,7 @@ export default class AdminCtrl {
             const offset = (page - 1) * limit;
 
             const allAdmins = await Admin.findAndCountAll({
-                include: [
-                    { model: User, attributes: { exclude: ['password'] } },
-                    { model: Role },
-                ],
+                include: [{ model: User, attributes: { exclude: ['password'] } }, { model: Role }],
                 limit: Number(limit),
                 offset: Number(offset),
             });
@@ -175,7 +226,7 @@ export default class AdminCtrl {
         }
     }
 
-    static async getAdminById(req: Request, res: Response) {
+    static async getAdminById(req: AuthenticatedRequest, res: Response) {
         try {
             const { id } = req.params;
 
@@ -204,7 +255,10 @@ export default class AdminCtrl {
             });
 
             if (adminDetails) {
-                res.status(200).json({ adminDetails });
+                res.status(200).json({
+                    body: adminDetails,
+                    tokenExpiration: req.tokenExpiration,
+                });
             } else {
                 res.status(404).json({ message: 'Admin not found' });
             }
@@ -214,12 +268,11 @@ export default class AdminCtrl {
         }
     }
 
-    static async updateAdmin(req: Request, res: Response) {
+    static async updateAdmin(req: AuthenticatedRequest, res: Response) {
         const t = await dbConn.transaction();
         try {
             const { id } = req.params;
-            const { user, rolId }: { user: UserInput; rolId: number } =
-                req.body;
+            const { user, rolId }: { user: UserInput; rolId: number } = req.body;
 
             if (!user || !rolId) {
                 throw new Error('Invalid user or rolId input');
@@ -246,7 +299,10 @@ export default class AdminCtrl {
                     { transaction: t },
                 );
                 await t.commit();
-                res.status(200).json({ adminUpdate });
+                res.status(200).json({
+                    body: adminUpdate,
+                    tokenExpiration: req.tokenExpiration,
+                });
             } else {
                 await t.rollback();
                 res.status(404).json({ message: 'Role not found' });
@@ -258,7 +314,7 @@ export default class AdminCtrl {
         }
     }
 
-    static async deleteAdmin(req: Request, res: Response) {
+    static async deleteAdmin(req: AuthenticatedRequest, res: Response) {
         const t = await dbConn.transaction();
         try {
             const { id } = req.params;
@@ -287,7 +343,9 @@ export default class AdminCtrl {
             }
 
             // Validar si ya existe un desarrollador registrado
-            const existingDeveloper = await Admin.findOne({ where: { role: 'Developer' } });
+            const existingDeveloper = await Admin.findOne({
+                where: { role: 'Developer' },
+            });
             if (existingDeveloper) {
                 return res.status(403).json({ message: 'Developer already registered' });
             }
@@ -300,15 +358,18 @@ export default class AdminCtrl {
                     username,
                     email,
                     password, // La contraseña será encriptada en el hook beforeCreate de User
-                    dni: 'N/A',      // Valor predeterminado
-                    phone: '0000000000',    // Valor predeterminado
-                    gender_id: 1 // Valor predeterminado
+                    dni: 'N/A', // Valor predeterminado
+                    phone: '0000000000', // Valor predeterminado
+                    gender_id: 1, // Valor predeterminado
                 },
-                { transaction: t }
+                { transaction: t },
             );
 
             // Asignar rol de desarrollador
-            const developerRole = await Role.findOne({ where: { name: 'Developer' }, transaction: t });
+            const developerRole = await Role.findOne({
+                where: { name: 'Developer' },
+                transaction: t,
+            });
             if (!developerRole) {
                 await t.rollback();
                 return res.status(404).json({ message: 'Developer role not found' });
@@ -320,18 +381,19 @@ export default class AdminCtrl {
                     user_id: user.dataValues.id,
                     role: developerRole.dataValues.id,
                     status: true,
-                    token
+                    token,
                 },
-                { transaction: t }
+                { transaction: t },
             );
 
             await t.commit();
-            res.status(201).json({ message: 'Developer registered successfully' });
+            res.status(201).json({
+                message: 'Developer registered successfully',
+            });
         } catch (error) {
             await t.rollback();
             logger.error(`Error in registerDeveloper: ${error}`);
             res.status(500).json({ message: 'Internal Server Error' });
         }
     }
-
 }

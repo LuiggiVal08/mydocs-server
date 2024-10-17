@@ -1,10 +1,12 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConn from '@/config/dbConn';
+import Level from './level';
+import { UUID } from 'crypto';
 
 interface CabinetAttr {
-    id: number;
+    id: UUID;
     name: string;
-    status: string;
+    status: boolean;
     location: string;
     createdAt?: Date;
     updatedAt?: Date;
@@ -20,14 +22,15 @@ Cabinet.init(
         id: {
             allowNull: false,
             primaryKey: true,
-            autoIncrement: true,
-            type: DataTypes.INTEGER,
+            defaultValue: DataTypes.UUIDV4,
+            // autoIncrement: true,
+            type: DataTypes.UUIDV4,
         },
         name: {
             type: DataTypes.STRING,
         },
         status: {
-            type: DataTypes.STRING,
+            type: DataTypes.BOOLEAN,
         },
         location: {
             type: DataTypes.STRING,
@@ -45,8 +48,10 @@ Cabinet.init(
         sequelize: dbConn,
         modelName: 'Cabinet',
         tableName: 'cabinet',
-    }
+    },
 );
-// Cabinet.sync({force:true})
+Level.belongsTo(Cabinet, { foreignKey: 'cabinet_id' });
+Cabinet.hasMany(Level, { foreignKey: 'cabinet_id' });
+// Cabinet.sync({ force: true });
 // Cabinet.sync()
 export default Cabinet;

@@ -1,10 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import Admin from '../models/admin'; // Asegúrate de ajustar la ruta según tu estructura de proyecto
 import User from '../models/user';
-
-interface AuthenticatedRequest extends Request {
-    user?: any;
-}
+import { AuthenticatedRequest } from '@/types/auth';
 
 // Middleware para verificar si el usuario es administrador
 export const isAdmin = async (
@@ -18,15 +15,18 @@ export const isAdmin = async (
                 .status(403)
                 .json({ message: 'User information is missing' });
         }
-        const user = await User.findOne({ where: { id: req.user.userId } });
-
+        const user = await User.findOne({ where: { id: req.user.userId } }); // Verificar si el usuario existe en la base de datos
 
         if (!user) {
             return res.status(403).json({ message: 'user not found' });
         } else {
-            const admin = await Admin.findOne({ where: { user_id: user.dataValues.id } });
+            const admin = await Admin.findOne({
+                where: { user_id: user.dataValues.id },
+            });
             if (!admin) {
-                return res.status(403).json({ message: 'User is not an admin' });
+                return res
+                    .status(403)
+                    .json({ message: 'User is not an admin' });
             }
         }
 

@@ -1,23 +1,32 @@
-import { Request, Response } from 'express';
-import Document/* , { DocumentInput } */ from '@/app/models/document';
+import { Response } from 'express';
+import Document /* , { DocumentInput } */ from '@/app/models/document';
 import Extension from '@/app/models/extension';
 import DocumentExtension from '@/app/models/documentExtension';
 import dbConn from '@/config/dbConn';
 import logger from '@/config/logger';
 import { z } from 'zod';
+import { AuthenticatedRequest } from '@/types/auth';
 
 const documentSchema = z.object({
     document: z.object({
         name: z.string().nonempty('Name is required').min(1).max(70),
         description: z.string().nonempty('Description is required').max(250),
     }),
-    format: z.array(z.object({
-        value: z.string().nonempty('Extension value is required').min(1).max(10),
-    })).nonempty('At least one format is required'),
+    format: z
+        .array(
+            z.object({
+                value: z
+                    .string()
+                    // .nonempty('Extension value is required')
+                    .min(1)
+                    .max(10),
+            }),
+        )
+        .nonempty('At least one format is required'),
 });
 
 export default class DocumentController {
-    static async createDocument(req: Request, res: Response) {
+    static async createDocument(req: AuthenticatedRequest, res: Response) {
         const t = await dbConn.transaction();
         try {
             const validationResult = documentSchema.safeParse(req.body);
@@ -28,28 +37,38 @@ export default class DocumentController {
                         return `${err.path[0]}: ${err.message}`;
                     },
                 );
-                return res.status(400).json({ message: errorMessages.join(', ') });
+                return res
+                    .status(400)
+                    .json({ message: errorMessages.join(', ') });
             }
 
             const { document, format } = validationResult.data;
 
-            const createdDocument = await Document.create(document, { transaction: t });
+            const createdDocument = await Document.create(document, {
+                transaction: t,
+            });
 
             const formatPromises = format.map(async (ext) => {
                 const extension = await Extension.findOrCreate({
                     where: { id: ext.value },
                     transaction: t,
                 });
-                return DocumentExtension.create({
-                    document_id: createdDocument.dataValues.id,
-                    extension_id: extension[0].dataValues.id,
-                }, { transaction: t });
+                return DocumentExtension.create(
+                    {
+                        document_id: createdDocument.dataValues.id,
+                        extension_id: extension[0].dataValues.id,
+                    },
+                    { transaction: t },
+                );
             });
 
             await Promise.all(formatPromises);
             await t.commit();
 
-            res.status(201).json({ createdDocument });
+            res.status(201).json({
+                body: createdDocument,
+                tokenExpiration: req.tokenExpiration,
+            });
         } catch (error) {
             await t.rollback();
             logger.error(`Error in createDocument: ${error}`);
@@ -57,7 +76,7 @@ export default class DocumentController {
         }
     }
 
-    static async updateDocument(req: Request, res: Response) {
+    static async updateDocument(req: AuthenticatedRequest, res: Response) {
         const t = await dbConn.transaction();
         try {
             const { id } = req.params;
@@ -69,12 +88,16 @@ export default class DocumentController {
                         return `${err.path[0]}: ${err.message}`;
                     },
                 );
-                return res.status(400).json({ message: errorMessages.join(', ') });
+                return res
+                    .status(400)
+                    .json({ message: errorMessages.join(', ') });
             }
 
             const { document, format } = validationResult.data;
 
-            const existingDocument = await Document.findByPk(id, { transaction: t });
+            const existingDocument = await Document.findByPk(id, {
+                transaction: t,
+            });
 
             if (!existingDocument) {
                 return res.status(404).json({ message: 'Document not found' });
@@ -92,16 +115,22 @@ export default class DocumentController {
                     where: { id: ext.value },
                     transaction: t,
                 });
-                return DocumentExtension.create({
-                    document_id: existingDocument.dataValues.id,
-                    extension_id: extension[0].dataValues.id,
-                }, { transaction: t });
+                return DocumentExtension.create(
+                    {
+                        document_id: existingDocument.dataValues.id,
+                        extension_id: extension[0].dataValues.id,
+                    },
+                    { transaction: t },
+                );
             });
 
             await Promise.all(formatPromises);
             await t.commit();
-
-            res.status(200).json({ updatedDocument: existingDocument });
+            const updatedDocument = existingDocument.dataValues;
+            res.status(200).json({
+                body: updatedDocument,
+                tokenExpiration: req.tokenExpiration,
+            });
         } catch (error) {
             await t.rollback();
             logger.error(`Error in updateDocument: ${error}`);
@@ -109,10 +138,7 @@ export default class DocumentController {
         }
     }
 
-    static async getDocument(req: Request, res: Response) {
-
-
-
+    static async getDocument(req: AuthenticatedRequest, res: Response) {
         try {
             const { id } = req.params;
             const document = await Document.findByPk(id, {
@@ -128,14 +154,17 @@ export default class DocumentController {
                 return res.status(404).json({ message: 'Document not found' });
             }
 
-            res.status(200).json({ document });
+            res.status(200).json({
+                body: document,
+                tokenExpiration: req.tokenExpiration,
+            });
         } catch (error) {
             logger.error(`Error in getDocument: ${error}`);
             res.status(500).json({ message: 'Internal Server Error' });
         }
     }
 
-    static async getAllDocuments(_req: Request, res: Response) {
+    static async getAllDocuments(_req: AuthenticatedRequest, res: Response) {
         try {
             const documents = await Document.findAll({
                 include: [
@@ -143,12 +172,12 @@ export default class DocumentController {
                         model: Extension,
                         through: { attributes: [] },
                         attributes: {
-                            exclude: ['createdAt', 'updatedAt', 'definition']
+                            exclude: ['createdAt', 'updatedAt', 'definition'],
                         },
                     },
                 ],
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt']
+                    exclude: ['createdAt', 'updatedAt'],
                 },
             });
             res.status(200).json(documents);
@@ -158,7 +187,7 @@ export default class DocumentController {
         }
     }
 
-    static async deleteDocument(req: Request, res: Response) {
+    static async deleteDocument(req: AuthenticatedRequest, res: Response) {
         const t = await dbConn.transaction();
         try {
             const { id } = req.params;

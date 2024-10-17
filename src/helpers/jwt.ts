@@ -6,7 +6,7 @@ export default (payload: string | object | Buffer) => {
             payload,
             process.env.JWT_SECRET ?? 'secreto',
             {
-                expiresIn: '3min',
+                expiresIn: '15m',
             },
             (err, token) => {
                 if (err) reject(err);

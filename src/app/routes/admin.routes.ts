@@ -7,6 +7,9 @@ const Router = express.Router();
 // Ruta de login
 Router.post('/login', AdminCtrl.login);
 
+// Ruta para cerrar la sesión
+Router.get('/logout', AdminCtrl.logout);
+
 // Ruta para crear un nuevo administrador
 Router.post('/', isAuthenticated, isAdmin, AdminCtrl.createAdmin);
 

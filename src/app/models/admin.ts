@@ -14,10 +14,10 @@ interface AdminAttr {
     updatedAt?: Date;
 }
 
-export interface AdminInput extends Optional<AdminAttr, 'id'> { }
-export interface AdminOuput extends Required<AdminAttr> { }
+export interface AdminInput extends Optional<AdminAttr, 'id'> {}
+export interface AdminOuput extends Required<AdminAttr> {}
 
-class Admin extends Model<AdminAttr, AdminInput> { }
+class Admin extends Model<AdminAttr, AdminInput> {}
 
 Admin.init(
     {

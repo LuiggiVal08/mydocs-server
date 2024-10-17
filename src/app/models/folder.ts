@@ -1,7 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConn from '@/config/dbConn';
 import Student from './student';
-import Level from './level';
 
 interface FolderAttr {
     id: number;
@@ -12,10 +11,10 @@ interface FolderAttr {
     updatedAt?: Date;
 }
 
-export interface FolderInput extends Optional<FolderAttr, 'id'> {}
-export interface FolderOutput extends Required<FolderAttr> {}
+export interface FolderInput extends Optional<FolderAttr, 'id'> { }
+export interface FolderOutput extends Required<FolderAttr> { }
 
-class Folder extends Model<FolderAttr, FolderInput> {}
+class Folder extends Model<FolderAttr, FolderInput> { }
 
 Folder.init(
     {
@@ -55,9 +54,7 @@ Folder.init(
 // Relationships
 Folder.belongsTo(Student, { foreignKey: 'student_id' });
 Student.hasMany(Folder, { foreignKey: 'student_id' });
-Folder.belongsTo(Level, { foreignKey: 'level_id' });
-Level.hasMany(Folder, { foreignKey: 'level_id' });
 
-// Folder.sync({force:true})
+// Folder.sync({ force: true })
 // Folder.sync()
 export default Folder;

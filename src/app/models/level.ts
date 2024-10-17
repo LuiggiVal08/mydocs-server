@@ -1,10 +1,11 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import dbConn from '@/config/dbConn';
-import Cabinet from './cabinet';
+import Folder from './folder';
+import { UUID } from 'crypto';
 
 interface LevelAttr {
     id: number;
-    cabinet_id: number;
+    cabinet_id: UUID;
     name: string;
     capacity: number;
     status: boolean;
@@ -26,7 +27,7 @@ Level.init(
             type: DataTypes.INTEGER,
         },
         cabinet_id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.UUIDV4,
             allowNull: false,
         },
         name: {
@@ -51,12 +52,13 @@ Level.init(
         sequelize: dbConn,
         modelName: 'Level',
         tableName: 'level',
-    }
+    },
 );
 
 // Relaciones
-Level.belongsTo(Cabinet, { foreignKey: 'cabinet_id' });
-Cabinet.hasMany(Level, { foreignKey: 'cabinet_id' });
-// Level.sync({force:true})
+
+Folder.belongsTo(Level, { foreignKey: 'level_id' });
+Level.hasMany(Folder, { foreignKey: 'level_id' });
+// Level.sync({ force: true })
 // Level.sync()
 export default Level;

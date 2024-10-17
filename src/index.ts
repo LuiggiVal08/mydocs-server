@@ -12,6 +12,7 @@ export const server = createServer(app);
 export const io = configSocket(server);
 
 app.use('/api/', router);
+
 // const nameSpaceAdmin = io.of('/admin');
 // const nameSpaceStudent = io.of('/student');
 
