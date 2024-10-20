@@ -7,7 +7,9 @@ import jwt from '@/helpers/jwt';
 import { compareSync } from 'bcryptjs';
 import { z } from 'zod';
 import logger from '@/config/logger';
-import crypto from 'crypto';
+// import crypto from 'crypto';
+import crypto from 'node:crypto';
+
 import Address, { AddressInput } from '../models/address';
 import { AuthenticatedRequest } from '@/types/auth';
 
@@ -134,6 +136,7 @@ export default class AdminCtrl {
 
             if (role) {
                 const token = crypto.randomBytes(32).toString('hex'); // Generar token
+                // const  token = crypto.
 
                 await Admin.create(
                     {
