@@ -5,7 +5,7 @@ jest.mock('jsonwebtoken', () => ({
     sign: jest.fn(),
 }));
 
-describe.skip('generateToken', () => {
+describe('generateToken', () => {
     const payload = { userId: '123' };
     const secret = 'secreto';
 
