@@ -42,13 +42,13 @@ export const connSocket = (socket: Socket) => {
         logger.info(`Usuario con ID ${userId} asociado al socket ${socket.id}`);
     });
 
-    socket.on('search', async (_query: string, _preferences: any) => {
-        // console.log('Búsqueda recibida de:', socket.id);
-        // const results = await SearchController.searchUser(query);
-        // // console.log(results, preferences);
-        // socket.emit('searchResults', results);
-        // io.to(socket.id).emit('searchResults', query);
-    });
+    // socket.on('search', async (_query: string, _preferences: any) => {
+    //     // console.log('Búsqueda recibida de:', socket.id);
+    //     // const results = await SearchController.searchUser(query);
+    //     // // console.log(results, preferences);
+    //     // socket.emit('searchResults', results);
+    //     // io.to(socket.id).emit('searchResults', query);
+    // });
 
     socket.on('message', (data) => {
         console.log(data);

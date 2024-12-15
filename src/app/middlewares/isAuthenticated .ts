@@ -39,6 +39,6 @@ export const isAuthenticated = async (req: AuthenticatedRequest, res: Response, 
 
         next();
     } catch (err) {
-        res.status(401).json({ message: 'Invalid or expired token' });
+        res.status(401).json({ message: 'Invalid or expired token' + err });
     }
 };

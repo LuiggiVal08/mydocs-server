@@ -1,32 +1,40 @@
 const eslintPlugin = require('@typescript-eslint/eslint-plugin');
+const typescriptParser = require('@typescript-eslint/parser');
 
 /** @type {import('eslint').Linter.Config[]} */
-const config = [
+module.exports = [
     {
-        ignores: ['dist/', 'node_modules/'],
+        ignores: ['./dist', './node_modules'],
+        files: ['src/**/*.ts'],
         languageOptions: {
+            sourceType: 'module',
+            ecmaVersion: 2022,
+            parser: typescriptParser,
             parserOptions: {
                 project: './tsconfig.json',
-                ecmaVersion: 2020,
-                sourceType: 'module',
             },
             globals: {
+                browser: 'readonly',
                 jest: 'readonly',
             },
         },
         plugins: {
             '@typescript-eslint': eslintPlugin,
         },
+        linterOptions: {
+            noInlineConfig: true,
+            reportUnusedDisableDirectives: 'warn',
+        },
         rules: {
             'no-unused-vars': 'off', // Desactivar la regla de JS
             '@typescript-eslint/no-unused-vars': [
-                'error',
-                { vars: 'all', args: 'after-used', ignoreRestSiblings: true },
+                'warn',
+                {
+                    vars: 'all',
+                    args: 'after-used',
+                    ignoreRestSiblings: false,
+                },
             ],
         },
-
-        files: ['*.ts', '*.tsx'],
     },
 ];
-
-module.exports = config;
