@@ -1,0 +1,296 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL_DEV")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Estado {
+  id        String    @id @default(uuid())
+  nombre    String
+  municipios Municipio[]
+}
+
+model Municipio {
+  id        String   @id @default(uuid())
+  estadoId  String
+  estado    Estado   @relation(fields: [estadoId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  nombre    String
+  usuarios  Usuario[]
+}
+
+model Usuario {
+  id                  String     @id @default(uuid())
+  dni                 String     @unique
+  nombre              String
+  apellido            String
+  nombreDeUsuario     String
+  correo               String
+  celular             String
+  contraseña          String
+  direccion           String
+  genero             String
+  avatar             String    @default("/images/profile-default.png")
+  municipioId        String
+  municipio          Municipio  @relation(fields: [municipioId], references: [id])
+  estudiante          Estudiante?
+  administrador       Administrador?
+}
+
+model Estudiante {
+  id           String     @id @default(uuid())
+  usuarioId    String     @unique
+  usuario      Usuario    @relation(fields: [usuarioId], references: [id])
+  activo       Boolean    @default(true)
+  retiros      Retiro[]
+  inscripciones Inscripcion[]
+  asistencias       Asistencia[]
+  notas             Notas[]
+  solicitudes       SolicitudEstudiante[]
+  carpeta       Carpeta?   @relation(name: "CarpetaToEstudiante")
+}
+
+model Retiro {
+  id          String     @id @default(uuid())
+  estudianteId String
+  estudiante   Estudiante @relation(fields: [estudianteId], references: [id])
+  fechaRetiro  DateTime
+  motivo      String?
+  observaciones String?
+}
+
+model Rol {
+  id          String          @id @default(uuid())
+  nombre      String
+  descripcion String
+  administradores Administrador[]
+}
+
+model Administrador {
+  id           String     @id @default(uuid())
+  usuarioId    String     @unique
+  usuario      Usuario    @relation(fields: [usuarioId], references: [id])
+  rolId        String
+  rol          Rol        @relation(fields: [rolId], references: [id])
+  estado       String
+  historialAcciones HistorialAcciones[]
+  cursoLapso        CursoLapso[]
+}
+
+model HistorialAcciones {
+  id             String      @id @default(uuid())
+  administradorId String
+  administrador   Administrador @relation(fields: [administradorId], references: [id])
+  tipoAccion     String
+  entidad        String
+  entidadId      String
+  detalles       String
+  fecha          DateTime
+}
+
+model Pnf {
+  id          Int        @id @default(autoincrement())
+  nombre      String
+  descripcion String
+  periodicidad String
+  trayectos   Trayecto[]
+}
+
+model Trayecto {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  duracion    Int
+  pnfId       Int
+  pnf         Pnf      @relation(fields: [pnfId], references: [id])
+  unidadCurricular UnidadCurricular[]
+}
+
+model UnidadCurricular {
+  codigo             Int      @id @default(autoincrement())
+  trayectoId         Int
+  trayecto           Trayecto @relation(fields: [trayectoId], references: [id])
+  nombre             String
+  creditos           Int
+  hte                Int
+  htea               Int
+  htei               Int
+  horasSemanales     Int
+  duracion           Int
+  notaMinimaAprobatoria Decimal
+  notaMinimaRecuperacion Decimal
+  notaMinimaPer      Decimal
+  porcentajeMinAsistencia Decimal
+  cursoLapso           CursoLapso[]   // Aquí agregamos la relación inversa (uno a muchos)
+}
+
+model LapsoAcademico {
+  id           Int      @id @default(autoincrement())
+  nombre       String
+  fechaInicio  DateTime
+  fechaFin     DateTime
+  cursosLapso  CursoLapso[]
+}
+
+model Seccion {
+  id           Int      @id @default(autoincrement())
+  nombre       String
+  horario      String
+  aula         String
+  capacidad    Int
+  cursosLapso  CursoLapso[]
+}
+
+model CursoLapso {
+  id                Int           @id @default(autoincrement())
+  unidadCurricularId Int
+  unidadCurricular   UnidadCurricular @relation(fields: [unidadCurricularId], references: [codigo])
+  seccionId         Int
+  seccion           Seccion        @relation(fields: [seccionId], references: [id])
+  lapsoAcademicoId  Int
+  lapsoAcademico    LapsoAcademico @relation(fields: [lapsoAcademicoId], references: [id])
+  profesorId        String
+  profesor          Administrador  @relation(fields: [profesorId], references: [id])
+  horario           String
+  estado            String
+  inscripciones      Inscripcion[]
+  asistencias       Asistencia[]
+  notas             Notas[]
+}
+
+model Inscripcion {
+  id              Int           @id @default(autoincrement())
+  fechaInscripcion DateTime
+  estudianteId    String        @unique
+  estudiante      Estudiante    @relation(fields: [estudianteId], references: [id])
+  cursoLapsoId    Int           @unique
+  cursoLapso      CursoLapso   @relation(fields: [cursoLapsoId], references: [id])
+  estado          String
+  observaciones   String
+}
+
+
+model Asistencia {
+  id           Int       @id @default(autoincrement())
+  cursoLapsoId Int
+  cursoLapso   CursoLapso @relation(fields: [cursoLapsoId], references: [id])
+  estudianteId String
+  estudiante   Estudiante  @relation(fields: [estudianteId], references: [id])
+  fecha        DateTime
+  estado       String
+  observaciones String
+}
+
+model Notas {
+  id                Int       @id @default(autoincrement())
+  estudianteId      String
+  estudiante        Estudiante @relation(fields: [estudianteId], references: [id])
+  cursoLapsoId      Int
+  cursoLapso     CursoLapso   @relation(fields: [cursoLapsoId], references: [id])
+  nota              Decimal
+  modalidad         String
+  fechaRegistro     DateTime
+  observaciones     String
+}
+
+model Solicitud {
+  id          String   @id @default(uuid())
+  nombre      String
+  precio      Float
+  solicitudesEstudiante SolicitudEstudiante[]
+}
+
+model DetallePago {
+  id              String     @id @default(uuid())
+  tipo            String
+  banco           String
+  numeroTelefono  String
+  titularNombre   String
+  titularApellido String
+  numeroCuenta    String
+  cedulaIdentidad String
+  pagos           Pago[]
+}
+
+model Pago {
+  id           String     @id @default(uuid())
+  monto        Float
+  detalleId    String
+  detalle      DetallePago @relation(fields: [detalleId], references: [id])
+  fechaPago    DateTime
+  estadoPago   String
+  solicitudes   SolicitudEstudiante[]
+}
+
+model SolicitudEstudiante {
+  id            String   @id @default(uuid())
+  estudianteId  String
+  estudiante    Estudiante @relation(fields: [estudianteId], references: [id])
+  solicitudId   String
+  solicitud     Solicitud  @relation(fields: [solicitudId], references: [id])
+  estado        String
+  fechaSolicitud DateTime
+  pagoId        String
+  pago          Pago      @relation(fields: [pagoId], references: [id])
+}
+
+model Archivero {
+  id           String    @id @default(uuid())
+  nombre       String
+  estado       String
+  ubicacion    String
+  niveles      Nivel[]
+}
+
+model Nivel {
+  id           String    @id @default(uuid())
+  archiveroId  String
+  archivero    Archivero @relation(fields: [archiveroId], references: [id])
+  nombre       String
+  capacidad    Int
+  estado       Boolean
+  carpetas     Carpeta[]
+}
+
+model Carpeta {
+  id           String    @id @default(uuid())
+  estudianteId String    @unique
+  estudiante   Estudiante @relation(name: "CarpetaToEstudiante", fields: [estudianteId], references: [id])
+  nivelId      String
+  nivel        Nivel      @relation(fields: [nivelId], references: [id])
+  ubicacion    String
+  documentos    CarpetaDocumento[]
+}
+
+model Documento {
+  id          String   @id @default(uuid())
+  nombre      String
+  descripcion String
+  documentoExtension DocumentoExtension[]
+}
+
+model Extension {
+  id          String    @id @default(uuid())
+  nombre      String
+  documentos  DocumentoExtension[]
+}
+
+model DocumentoExtension {
+  id           String    @id @default(uuid())
+  documentoId  String
+  extensionId  String
+  documento    Documento @relation(fields: [documentoId], references: [id])
+  extension    Extension @relation(fields: [extensionId], references: [id])
+  carpetaDocumentos CarpetaDocumento[]
+}
+
+model CarpetaDocumento {
+  id                    String          @id @default(uuid())
+  carpetaId             String
+  carpeta               Carpeta         @relation(fields: [carpetaId], references: [id])
+  documentoExtensionId  String
+  documentoExtension    DocumentoExtension @relation(fields: [documentoExtensionId], references: [id])
+  url                   String
+}
