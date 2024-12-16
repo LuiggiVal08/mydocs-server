@@ -23,8 +23,8 @@ beforeEach(async () => {
     }
 });
 
-describe.only('GET /api/state', () => {
-    it.only('states are return as json', async () => {
+describe('GET /api/state', () => {
+    it('states are return as json', async () => {
         await api
             .get('/api/state')
             .expect(200)
