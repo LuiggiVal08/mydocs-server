@@ -12,7 +12,10 @@ const MUNICIPALITIES = [
         nombre: 'Municipio 2',
     },
 ];
-
+afterEach(async () => {
+    const server = await serverListen;
+    server.close();
+});
 beforeEach(async () => {
     await prisma.estado.deleteMany({});
     await prisma.municipio.deleteMany({});

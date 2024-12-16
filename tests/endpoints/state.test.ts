@@ -12,7 +12,10 @@ const initialStates = [
         nombre: 'Carabobo',
     },
 ];
-
+afterEach(async () => {
+    const server = await serverListen;
+    server.close();
+});
 beforeEach(async () => {
     await prisma.estado.deleteMany({});
     for (const state of initialStates) {
