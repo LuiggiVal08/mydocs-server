@@ -8,7 +8,8 @@ on:
 jobs:
     build:
         runs-on: ubuntu-24.04
-
+        env:
+            DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }} # Agrega esta línea
         strategy:
             matrix:
                 node-version: [20.x, 22.x]
