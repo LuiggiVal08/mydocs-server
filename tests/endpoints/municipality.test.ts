@@ -18,18 +18,25 @@ beforeAll(async () => {
     await server.close();
 });
 
-beforeAll(async () => {
-    await prisma.estado.create({ data: { nombre: 'Estado 1' } });
-});
+// beforeAll(async () => {
+//     await prisma.estado.create({ data: { nombre: 'Estado 1' } });
+// });
 
+// beforeEach(async () => {
+//     await prisma.municipio.deleteMany();
+//     const state = await prisma.estado.findFirst();
+//     for (const municipality of MUNICIPALITIES) {
+//         await prisma.municipio.create({ data: { nombre: municipality.nombre, estadoId: state.id } });
+//     }
+// });
 beforeEach(async () => {
+    await prisma.estado.deleteMany();
+    const state = await prisma.estado.create({ data: { nombre: 'Estado 1' } });
     await prisma.municipio.deleteMany();
-    const state = await prisma.estado.findFirst();
     for (const municipality of MUNICIPALITIES) {
         await prisma.municipio.create({ data: { nombre: municipality.nombre, estadoId: state.id } });
     }
 });
-
 describe('Municipality API', () => {
     describe('GET /api/municipality', () => {
         it('should return municipalities as json', async () => {
