@@ -140,8 +140,8 @@ describe('Municipality API', () => {
 
 afterAll(async () => {
     const server = await serverListen;
-    await prisma.estado.deleteMany({});
-    await prisma.municipio.deleteMany();
+    // await prisma.estado.deleteMany({});
+    // await prisma.municipio.deleteMany();
     await prisma.$disconnect();
     await server.close();
 });
