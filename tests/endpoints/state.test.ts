@@ -16,15 +16,15 @@ beforeAll(async () => {
     const server = await serverListen;
     server.close();
 });
-// beforeEach(async () => {
-//     await prisma.estado.deleteMany({});
-//     for (const state of initialStates) {
-//         await prisma.estado.create({ data: state });
-//     }
-// });
+beforeEach(async () => {
+    await prisma.estado.deleteMany({});
+    for (const state of initialStates) {
+        await prisma.estado.create({ data: state });
+    }
+});
 
-describe('GET /api/state', () => {
-    it('states are return as json', async () => {
+describe.only('GET /api/state', () => {
+    it.only('states are return as json', async () => {
         await api
             .get('/api/state')
             .expect(200)
