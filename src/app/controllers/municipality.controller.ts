@@ -5,7 +5,7 @@ import z from 'zod';
 
 const MunicipalitySchema = z.object({
     nombre: z.string().min(3),
-    estadoId: z.string().uuid(),
+    estadoId: z.string(),
 });
 
 class Municipality {
@@ -59,6 +59,11 @@ class Municipality {
     static async update(req: Request, res: Response) {
         try {
             const { id } = req.params;
+            const ifMunicipality = await prisma.municipio.findUnique({ where: { id } });
+            if (!ifMunicipality) {
+                res.status(404).json({ message: 'municipio no encontrado' });
+                return;
+            }
             const { body } = req;
             const parsed = MunicipalitySchema.safeParse(body);
             if (!parsed.success) {
