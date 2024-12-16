@@ -4,7 +4,6 @@ import prisma from '@/config/prisma';
 
 const api = request(serverApp);
 
-let idState: string;
 const MUNICIPALITIES = [
     {
         nombre: 'Municipio 1',
@@ -17,11 +16,10 @@ const MUNICIPALITIES = [
 beforeEach(async () => {
     await prisma.estado.deleteMany({});
     const state = await prisma.estado.create({ data: { nombre: 'Carabobo' } });
-    idState = state.id;
     await prisma.municipio.deleteMany({});
     await Promise.all(
         MUNICIPALITIES.map(async (municipality) => {
-            await prisma.municipio.create({ data: { ...municipality, estadoId: idState } });
+            await prisma.municipio.create({ data: { ...municipality, estadoId: state.id } });
         }),
     );
 });
@@ -62,7 +60,9 @@ describe('Municipality API', () => {
 
     describe('POST /api/municipality', () => {
         it('should create a new municipality', async () => {
-            const newMunicipality = { nombre: 'Municipio 3', estadoId: idState };
+            const states = await prisma.estado.findMany();
+            const firtsState = states[0];
+            const newMunicipality = { nombre: 'Municipio 3', estadoId: firtsState.id };
             await api
                 .post('/api/municipality')
                 .send(newMunicipality)
@@ -88,10 +88,11 @@ describe('Municipality API', () => {
     describe('PUT /api/municipality/:id', () => {
         it('should update an existing municipality', async () => {
             const { body } = await api.get('/api/municipality');
-            const municipalityId = body.data.municipality[0].id;
-            const updatedMunicipality = { nombre: 'Municipio Actualizado', estadoId: idState };
+            const municipality = body.data.municipality[0];
+            console.log(municipality.estadoId);
+            const updatedMunicipality = { nombre: 'Municipio Actualizado', estadoId: municipality.estadoId };
             await api
-                .put(`/api/municipality/${municipalityId}`)
+                .put(`/api/municipality/${municipality.id}`)
                 .send(updatedMunicipality)
                 .expect(200)
                 .expect('Content-Type', /application\/json/);
@@ -134,11 +135,12 @@ describe('Municipality API', () => {
     });
 });
 
-afterEach(async () => {
-    await prisma.$disconnect();
-});
+// afterEach(async () => {});
 
 afterAll(async () => {
+    await prisma.estado.deleteMany({});
+    await prisma.municipio.deleteMany({});
+    await prisma.$disconnect();
     const server = await serverListen;
     await server.close();
 });
