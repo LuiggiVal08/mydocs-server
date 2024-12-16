@@ -10,6 +10,7 @@ jobs:
         runs-on: ubuntu-24.04
         env:
             DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }} # Agrega esta línea
+            JWT_SECRET: ${{ secrets.JWT_SECRET }} # Agrega esta línea
         strategy:
             matrix:
                 node-version: [20.x, 22.x]
@@ -20,6 +21,7 @@ jobs:
             - name: Create .env file
               run: |
                   echo "DATABASE_URL_TEST=${{ secrets.DATABASE_URL_TEST }}" >> .env
+                  echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
                   # Agrega otras variables de entorno necesarias aquí
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
