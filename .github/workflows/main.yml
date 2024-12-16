@@ -36,6 +36,8 @@ jobs:
               run: npx prisma generate --schema=prisma/schema.test.prisma
             - name: Generate Prisma Client (production)
               run: npx prisma generate --schema=prisma/schema.production.prisma
+            - name: Kill process on port 3000
+              run: lsof -i:3000 | grep LISTEN | awk '{print $2}' | xargs kill -9
             - name: Run tests
               run: npm run test
             - name: Run build
