@@ -130,9 +130,10 @@ describe('DELETE /api/state/:id', () => {
             .expect('Content-Type', /application\/json/);
     });
 });
-
+afterEach(async () => {
+    await prisma.estado.deleteMany();
+});
 afterAll(async () => {
-    // await prisma.estado.deleteMany();
     await prisma.$disconnect();
     const server = await serverListen;
     await server.close();

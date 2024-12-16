@@ -2,6 +2,7 @@ import type { Config } from 'jest';
 import { loadEnvFile } from 'node:process';
 loadEnvFile();
 const config: Config = {
+    testTimeout: 5000,
     testEnvironment: 'node',
     preset: 'ts-jest',
     testMatch: ['**/tests/**/*.test.ts'], // Ruta a tus archivos de test
