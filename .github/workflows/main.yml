@@ -17,6 +17,10 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
+            - name: Create .env file
+              run: |
+                  echo "DATABASE_URL_TEST=${{ secrets.DATABASE_URL_TEST }}" >> .env
+                  # Agrega otras variables de entorno necesarias aquí
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
