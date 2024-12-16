@@ -16,16 +16,16 @@ beforeAll(async () => {
     const server = await serverListen;
     await server.close();
     await prisma.estado.deleteMany();
-    await prisma.estado.create({ data: { nombre: 'Carabobo' } });
+    await prisma.estado.create({ data: { nombre: 'Estado 1' } });
 });
 
-// beforeEach(async () => {
-//     await prisma.municipio.deleteMany();
-//     const state = await prisma.estado.findFirst();
-//     for (const municipality of MUNICIPALITIES) {
-//         await prisma.municipio.create({ data: { nombre: municipality.nombre, estadoId: state.id } });
-//     }
-// });
+beforeEach(async () => {
+    await prisma.municipio.deleteMany();
+    const state = await prisma.estado.findFirst();
+    for (const municipality of MUNICIPALITIES) {
+        await prisma.municipio.create({ data: { nombre: municipality.nombre, estadoId: state.id } });
+    }
+});
 
 describe('Municipality API', () => {
     describe.only('GET /api/municipality', () => {
@@ -64,7 +64,6 @@ describe('Municipality API', () => {
     describe.skip('POST /api/municipality', () => {
         it('should create a new municipality', async () => {
             const state = await prisma.estado.findFirst();
-
             const newMunicipality = { nombre: 'Municipio 3', estadoId: state.id };
             await api
                 .post('/api/municipality')
@@ -142,7 +141,7 @@ describe('Municipality API', () => {
 afterAll(async () => {
     const server = await serverListen;
     await prisma.estado.deleteMany({});
-    await prisma.municipio.deleteMany({});
+    await prisma.municipio.deleteMany();
     await prisma.$disconnect();
     await server.close();
 });
