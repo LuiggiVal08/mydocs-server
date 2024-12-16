@@ -31,8 +31,8 @@ beforeAll(async () => {
 // });
 beforeEach(async () => {
     // await prisma.estado.deleteMany();
-    const state = await prisma.estado.create({ data: { nombre: 'Estado 1' } });
     await prisma.municipio.deleteMany();
+    const state = await prisma.estado.findFirst();
     for (const municipality of MUNICIPALITIES) {
         await prisma.municipio.create({ data: { nombre: municipality.nombre, estadoId: state.id } });
     }
