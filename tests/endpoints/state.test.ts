@@ -14,7 +14,7 @@ const initialStates = [
 ];
 
 beforeEach(async () => {
-    await prisma.estado.deleteMany();
+    await prisma.estado.deleteMany({});
     await Promise.all(
         initialStates.map(async (state) => {
             await prisma.estado.create({ data: state });
