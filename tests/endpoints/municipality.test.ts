@@ -14,14 +14,15 @@ const MUNICIPALITIES = [
 ];
 beforeAll(async () => {
     const server = await serverListen;
-    server.close();
-});
-beforeEach(async () => {
+    await server.close();
     await prisma.estado.deleteMany({});
-    await prisma.municipio.deleteMany({});
     await prisma.estado.create({ data: { nombre: 'Carabobo' } });
+});
+
+beforeEach(async () => {
+    await prisma.municipio.deleteMany({});
+    const state = await prisma.estado.findFirst();
     for (const municipality of MUNICIPALITIES) {
-        const state = await prisma.estado.findFirst();
         await prisma.municipio.create({ data: { ...municipality, estadoId: state.id } });
     }
 });
