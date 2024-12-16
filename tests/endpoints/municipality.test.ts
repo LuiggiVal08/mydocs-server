@@ -140,5 +140,5 @@ describe('Municipality API', () => {
 afterAll(async () => {
     await prisma.$disconnect();
     const server = await serverListen;
-    server.close();
+    await server.close();
 });

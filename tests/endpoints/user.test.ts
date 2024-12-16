@@ -59,5 +59,5 @@ describe('/api/users', () => {
 afterAll(async () => {
     prisma.$disconnect();
     const server = await serverListen;
-    server.close();
+    await server.close();
 });

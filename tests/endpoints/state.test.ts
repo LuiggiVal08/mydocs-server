@@ -138,5 +138,5 @@ describe('DELETE /api/state/:id', () => {
 afterAll(async () => {
     prisma.$disconnect();
     const server = await serverListen;
-    server.close();
+    await server.close();
 });
