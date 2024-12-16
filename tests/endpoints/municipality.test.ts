@@ -12,7 +12,7 @@ const MUNICIPALITIES = [
         nombre: 'Municipio 2',
     },
 ];
-afterEach(async () => {
+beforeAll(async () => {
     const server = await serverListen;
     server.close();
 });

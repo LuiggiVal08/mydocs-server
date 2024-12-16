@@ -6,7 +6,7 @@ import { serverApp, serverListen } from '@/index';
 import prisma from '@/config/prisma';
 const api = request(serverApp);
 
-afterEach(async () => {
+beforeAll(async () => {
     const server = await serverListen;
     server.close();
 });

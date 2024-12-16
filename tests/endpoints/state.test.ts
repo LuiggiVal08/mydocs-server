@@ -12,7 +12,7 @@ const initialStates = [
         nombre: 'Carabobo',
     },
 ];
-afterEach(async () => {
+beforeAll(async () => {
     const server = await serverListen;
     server.close();
 });
