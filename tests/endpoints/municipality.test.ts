@@ -37,6 +37,7 @@ beforeEach(async () => {
         await prisma.municipio.create({ data: { nombre: municipality.nombre, estadoId: state.id } });
     }
 });
+
 describe('Municipality API', () => {
     describe('GET /api/municipality', () => {
         it('should return municipalities as json', async () => {
