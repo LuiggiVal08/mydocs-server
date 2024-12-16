@@ -6,7 +6,7 @@ jest.mock('bcryptjs', () => ({
     hash: jest.fn(),
 }));
 
-describe.skip('hashPassword', () => {
+describe('hashPassword', () => {
     const validPassword = 'mySecurePassword';
     const salt = 'mockSalt';
     const hashedPassword = 'hashedPassword123';
