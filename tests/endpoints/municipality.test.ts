@@ -15,13 +15,11 @@ const MUNICIPALITIES = [
 
 beforeEach(async () => {
     await prisma.estado.deleteMany({});
-    const state = await prisma.estado.create({ data: { nombre: 'Carabobo' } });
     await prisma.municipio.deleteMany({});
-    await Promise.all(
-        MUNICIPALITIES.map(async (municipality) => {
-            await prisma.municipio.create({ data: { ...municipality, estadoId: state.id } });
-        }),
-    );
+    const state = await prisma.estado.create({ data: { nombre: 'Carabobo' } });
+    for (const municipality of MUNICIPALITIES) {
+        await prisma.municipio.create({ data: { ...municipality, estadoId: state.id } });
+    }
 });
 
 describe('Municipality API', () => {

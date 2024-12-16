@@ -15,11 +15,9 @@ const initialStates = [
 
 beforeEach(async () => {
     await prisma.estado.deleteMany({});
-    await Promise.all(
-        initialStates.map(async (state) => {
-            await prisma.estado.create({ data: state });
-        }),
-    );
+    for (const state of initialStates) {
+        await prisma.estado.create({ data: state });
+    }
 });
 
 describe('GET /api/state', () => {
