@@ -15,8 +15,8 @@ const MUNICIPALITIES = [
 beforeAll(async () => {
     const server = await serverListen;
     await server.close();
-    // await prisma.estado.deleteMany();
-    // await prisma.estado.create({ data: { nombre: 'Carabobo' } });
+    await prisma.estado.deleteMany();
+    await prisma.estado.create({ data: { nombre: 'Carabobo' } });
 });
 
 // beforeEach(async () => {
