@@ -20,8 +20,11 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     // await prisma.estado.deleteMany();
-    let state = await prisma.estado.findFirst();
-    if (!state) {
+    let states = await prisma.estado.findMany();
+    let state;
+    if (states.length > 0) {
+        state = states[0];
+    } else {
         state = await prisma.estado.create({ data: { nombre: 'Estado 1' } });
     }
     await prisma.municipio.deleteMany();
