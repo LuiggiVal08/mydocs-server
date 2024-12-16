@@ -40,10 +40,9 @@ describe('GET /api/state', () => {
 
 describe('GET /api/state/:id', () => {
     it('state is return as json', async () => {
-        const { body } = await api.get('/api/state');
-        const stateId = body.data.states[0].id;
+        const state = await prisma.estado.findFirst();
         await api
-            .get(`/api/state/${stateId}`)
+            .get(`/api/state/${state.id}`)
             .expect(200)
             .expect('Content-Type', /application\/json/);
     });
@@ -83,26 +82,24 @@ describe('POST /api/state', () => {
 
 describe('PUT /api/state/:id', () => {
     it('updates a state', async () => {
-        const { body } = await api.get('/api/state');
-        const stateId = body.data.states[0].id;
+        const state = await prisma.estado.findFirst();
         const newState = {
             nombre: 'Barinas',
         };
         await api
-            .put(`/api/state/${stateId}`)
+            .put(`/api/state/${state.id}`)
             .send(newState)
             .expect(200)
             .expect('Content-Type', /application\/json/);
     });
 
     it('fails to update a state', async () => {
-        const { body } = await api.get('/api/state');
-        const stateId = body.data.states[0].id;
+        const state = await prisma.estado.findFirst();
         const newState = {
             nombre: '',
         };
         await api
-            .put(`/api/state/${stateId}`)
+            .put(`/api/state/${state.id}`)
             .send(newState)
             .expect(400)
             .expect('Content-Type', /application\/json/);
@@ -111,18 +108,16 @@ describe('PUT /api/state/:id', () => {
 
 describe('DELETE /api/state/:id', () => {
     it('deletes a state', async () => {
-        const { body } = await api.get('/api/state');
-        const stateId = body.data.states[0].id;
+        const state = await prisma.estado.findFirst();
         await api
-            .delete(`/api/state/${stateId}`)
+            .delete(`/api/state/${state.id}`)
             .expect(200)
             .expect('Content-Type', /application\/json/);
 
-        const response = await api.get('/api/state');
+        const states = await prisma.estado.findMany();
+        expect(states).toHaveLength(initialStates.length - 1);
 
-        expect(response.body.data.states).toHaveLength(initialStates.length - 1);
-
-        const deletedState = await prisma.estado.findUnique({ where: { id: stateId } });
+        const deletedState = await prisma.estado.findUnique({ where: { id: state.id } });
         expect(deletedState).toBeNull();
     });
 
