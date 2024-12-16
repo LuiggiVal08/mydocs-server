@@ -3,7 +3,7 @@ import { colors, PORT } from '@/config';
 import logger from '@/config/logger';
 import { Application } from 'express';
 
-const PORT_SERVER: number = parseInt(PORT || '4000', 10);
+const PORT_SERVER: number = parseInt(PORT || '3000', 10);
 /**
  * Asynchronously starts the server on specified addresses and logs the available server locations.
  * @param server The server instance to start
