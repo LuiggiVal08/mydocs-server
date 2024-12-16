@@ -6,6 +6,10 @@ import { serverApp, serverListen } from '@/index';
 import prisma from '@/config/prisma';
 const api = request(serverApp);
 
+beforeAll(async () => {
+    const server = await serverListen;
+    server.close();
+});
 beforeEach(async () => {
     await prisma.usuario.deleteMany();
 });
