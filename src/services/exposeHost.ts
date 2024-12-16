@@ -34,7 +34,6 @@ const exposeHost = async (
                 `Local:   - ${colors.cyan}http://localhost:${colors.reset}${colors.white}${PORT_SERVER}${colors.reset}`,
             );
         }
-        logger.info(`Server Listener on Port ${PORT_SERVER}`);
     });
     return serverListen;
 };
