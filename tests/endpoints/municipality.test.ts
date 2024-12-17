@@ -20,7 +20,10 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     // await prisma.estado.deleteMany();
-    let states = await prisma.estado.findMany();
+    // let states = await prisma.estado.findMany();
+    let { body } = await api.get('/api/state');
+    const states = body.data.states;
+    console.log(body);
     let state;
     if (states.length > 0) {
         state = states[0];
