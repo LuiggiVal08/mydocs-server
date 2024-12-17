@@ -1,3 +1,4 @@
+[![Node.js CI](https://github.com/LuiggiVal08/mydocs-server/actions/workflows/main.yml/badge.svg)](https://github.com/LuiggiVal08/mydocs-server/actions/workflows/main.yml)
 # Proyecto Base en PHP
 
 ## Índice
