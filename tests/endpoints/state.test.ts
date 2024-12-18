@@ -1,6 +1,8 @@
 import request from 'supertest';
 import { serverApp, serverListen } from '@/index';
-import prisma from '@/config/prisma';
+import { testPrisma } from '@/config/prisma';
+
+const prisma = testPrisma;
 
 const api = request(serverApp);
 
@@ -12,6 +14,7 @@ const initialStates = [
         nombre: 'Carabobo',
     },
 ];
+
 beforeAll(async () => {
     const server = await serverListen;
     server.close();

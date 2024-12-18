@@ -1,7 +1,8 @@
 import request from 'supertest';
 import { serverApp, serverListen } from '@/index';
-import prisma from '@/config/prisma';
+import { testPrisma } from '@/config/prisma';
 
+const prisma = testPrisma;
 const api = request(serverApp);
 
 const MUNICIPALITIES = [
@@ -20,6 +21,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     await prisma.municipio.deleteMany();
+
     for (const municipality of MUNICIPALITIES) {
         let { body } = await api.get('/api/state');
         const states = body.data.states;
