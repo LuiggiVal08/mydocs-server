@@ -1,11 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  output          = "../../node_modules/@prisma-client/test/client"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL_DEV")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL_TEST")
+  shadowDatabaseUrl = env("DATABASE_URL_TEST_SHADOW")
 }
 
 model Estado {

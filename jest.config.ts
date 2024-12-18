@@ -12,6 +12,7 @@ const config: Config = {
         '^@$': '<rootDir>/src',
         '^@pp/(.*)$': '<rootDir>/src/app/$1',
         '^@pp$': '<rootDir>/src/app',
+        '^@prisma-client/(.*)$': '<rootDir>/node_modules/@prisma-client/$1',
     },
     rootDir: './',
     transform: {
