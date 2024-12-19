@@ -32,8 +32,8 @@ jobs:
               run: npm install
             - name: Run linter
               run: npm run lint
-            - name: Generate Prisma Client (test)
-              run: npx prisma generate --schema=prisma/test/schema.prisma
+            - name: Generate Prisma Client
+              run: npx prisma generate --schema=prisma/test/schema.prisma && npx prisma generate --schema=prisma/development/schema.prisma && npx prisma generate --schema=prisma/production/schema.prisma
             - name: Run tests
               run: npm run test
             - name: Run build
