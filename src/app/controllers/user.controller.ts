@@ -15,5 +15,21 @@ class User {
             await prisma.$disconnect();
         }
     }
+    static async getById(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const user = await prisma.usuario.findUnique({ where: { id } });
+            if (!user) {
+                res.status(404).json({ message: 'Usuario no encontrado' });
+                return;
+            }
+            res.status(200).json({ data: { student: user } });
+        } catch (error) {
+            logger.error(error);
+            res.status(400).end();
+        } finally {
+            prisma.$disconnect;
+        }
+    }
 }
 export default User;

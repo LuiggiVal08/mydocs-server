@@ -4,7 +4,6 @@ import { Request, Response } from 'express';
 import z from 'zod';
 
 const schemaStudent = z.object({
-    id: z.string().uuid(),
     usuarioId: z.string().uuid(),
     activo: z.boolean(),
 });
@@ -27,7 +26,7 @@ class Student {
             const { id } = req.params;
             const student = await prisma.estudiante.findUnique({ where: { id } });
             if (!student) {
-                res.status(404).json({ message: 'student not found' });
+                res.status(404).json({ message: 'Estudiante no encontrado' });
                 return;
             }
             res.status(200).json({ data: { student } });
@@ -60,6 +59,11 @@ class Student {
     static async update(req: Request, res: Response) {
         try {
             const { id } = req.params;
+            const existStudent = await prisma.estudiante.findUnique({ where: { id } });
+            if (!existStudent) {
+                res.status(404).json({ message: 'Estudiante no encontrado' });
+                return;
+            }
             const { body } = req;
             const parsed = schemaStudent.safeParse(body);
             if (!parsed.success) {
@@ -79,6 +83,11 @@ class Student {
     static async delete(req: Request, res: Response) {
         try {
             const { id } = req.params;
+            const existStudent = await prisma.estudiante.findUnique({ where: { id } });
+            if (!existStudent) {
+                res.status(404).json({ message: 'Estudiante no encontrado' });
+                return;
+            }
             await prisma.estudiante.delete({ where: { id } });
             res.status(204).end();
         } catch (error) {
