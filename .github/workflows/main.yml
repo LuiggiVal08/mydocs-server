@@ -10,7 +10,10 @@ jobs:
         runs-on: ubuntu-24.04
         env:
             DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }} # Agrega esta línea
+            DATABASE_URL_DEVELOPMENT: ${{ secrets.DATABASE_URL_DEVELOPMENT }} # Agrega esta línea
+            DATABASE_URL_PRODUCTION: ${{ secrets.DATABASE_URL_PRODUCTION }} # Agrega esta línea
             JWT_SECRET: ${{ secrets.JWT_SECRET }} # Agrega esta línea
+
         strategy:
             matrix:
                 node-version: [22.x]
@@ -21,6 +24,8 @@ jobs:
             - name: Create .env file
               run: |
                   echo "DATABASE_URL_TEST=${{ secrets.DATABASE_URL_TEST }}" >> .env
+                  echo "DATABASE_URL_DEVELOPMENT=${{ secrets.DATABASE_URL_DEVELOPMENT }}" >> .env
+                  echo "DATABASE_URL_PRODUCTION=${{ secrets.DATABASE_URL_PRODUCTION }}" >> .env
                   echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
                   # Agrega otras variables de entorno necesarias aquí
             - name: Use Node.js ${{ matrix.node-version }}
