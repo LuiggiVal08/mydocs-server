@@ -11,18 +11,18 @@ const AdminSchema = z.object({
 class Admin {
     static async getAll(_req: Request, res: Response) {
         try {
-            const admins = await prisma.administrador.findMany({
+            const admins = await prisma.administrator.findMany({
                 include: {
-                    usuario: {
+                    user: {
                         include: {
-                            municipio: {
+                            municipality: {
                                 include: {
-                                    estado: true,
+                                    state: true,
                                 },
                             },
                         },
                     },
-                    rol: true,
+                    role: true,
                 },
             });
             res.status(200).json({ data: { admins } });
@@ -35,18 +35,18 @@ class Admin {
     }
     static async getAllTeachers(_req: Request, res: Response) {
         try {
-            const admins = await prisma.administrador.findMany({
+            const admins = await prisma.administrator.findMany({
                 where: {
-                    rol: {
-                        nombre: 'teacher',
+                    role: {
+                        name: 'teacher',
                     },
                 },
                 include: {
-                    usuario: {
+                    user: {
                         include: {
-                            municipio: {
+                            municipality: {
                                 include: {
-                                    estado: true,
+                                    state: true,
                                 },
                             },
                         },
@@ -64,19 +64,19 @@ class Admin {
     static async getById(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const admin = await prisma.administrador.findUnique({
+            const admin = await prisma.administrator.findUnique({
                 where: { id },
                 include: {
-                    usuario: {
+                    user: {
                         include: {
-                            municipio: {
+                            municipality: {
                                 include: {
-                                    estado: true,
+                                    state: true,
                                 },
                             },
                         },
                     },
-                    rol: true,
+                    role: true,
                 },
             });
             if (!admin) {
@@ -99,7 +99,19 @@ class Admin {
                 res.status(400).json({ message: parsed.error.message });
                 return;
             }
-            const admin = await prisma.administrador.create({ data: body });
+            const usuarioId = parsed.data.usuarioId;
+            const usuario = await prisma.user.findUnique({ where: { id: usuarioId } });
+            if (!usuario) {
+                res.status(404).json({ message: 'Usuario no encontrado' });
+                return;
+            }
+            const rolId = parsed.data.rolId;
+            const rol = await prisma.role.findUnique({ where: { id: rolId } });
+            if (!rol) {
+                res.status(404).json({ message: 'Rol no encontrado' });
+                return;
+            }
+            const admin = await prisma.administrator.create({ data: body });
             res.status(201).json({ data: { admin } });
         } catch (error) {
             logger.error(error);
