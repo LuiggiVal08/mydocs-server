@@ -8,10 +8,10 @@ const api = request(serverApp);
 
 const initialStates = [
     {
-        nombre: 'Trujillo',
+        name: 'Trujillo',
     },
     {
-        nombre: 'Carabobo',
+        name: 'Carabobo',
     },
 ];
 
@@ -20,9 +20,9 @@ beforeAll(async () => {
     server.close();
 });
 beforeEach(async () => {
-    await prisma.estado.deleteMany({});
+    await prisma.state.deleteMany({});
     for (const state of initialStates) {
-        await prisma.estado.create({ data: state });
+        await prisma.state.create({ data: state });
     }
 });
 
@@ -44,7 +44,7 @@ describe('GET /api/state', () => {
 
 describe('GET /api/state/:id', () => {
     it('state is return as json', async () => {
-        const state = await prisma.estado.findFirst();
+        const state = await prisma.state.findFirst();
         await api
             .get(`/api/state/${state.id}`)
             .expect(200)
@@ -63,7 +63,7 @@ describe('GET /api/state/:id', () => {
 describe('POST /api/state', () => {
     it('creates a new state', async () => {
         const newState = {
-            nombre: 'Lara',
+            name: 'Lara',
         };
         await api
             .post('/api/state')
@@ -74,7 +74,7 @@ describe('POST /api/state', () => {
 
     it('fails to create a new state', async () => {
         const newState = {
-            nombre: '',
+            name: '',
         };
         await api
             .post('/api/state')
@@ -86,9 +86,9 @@ describe('POST /api/state', () => {
 
 describe('PUT /api/state/:id', () => {
     it('updates a state', async () => {
-        const state = await prisma.estado.findFirst();
+        const state = await prisma.state.findFirst();
         const newState = {
-            nombre: 'Barinas',
+            name: 'Barinas',
         };
         await api
             .put(`/api/state/${state.id}`)
@@ -98,9 +98,9 @@ describe('PUT /api/state/:id', () => {
     });
 
     it('fails to update a state', async () => {
-        const state = await prisma.estado.findFirst();
+        const state = await prisma.state.findFirst();
         const newState = {
-            nombre: '',
+            name: '',
         };
         await api
             .put(`/api/state/${state.id}`)
@@ -112,16 +112,16 @@ describe('PUT /api/state/:id', () => {
 
 describe('DELETE /api/state/:id', () => {
     it('deletes a state', async () => {
-        const state = await prisma.estado.findFirst();
+        const state = await prisma.state.findFirst();
         await api
             .delete(`/api/state/${state.id}`)
             .expect(200)
             .expect('Content-Type', /application\/json/);
 
-        const states = await prisma.estado.findMany();
+        const states = await prisma.state.findMany();
         expect(states).toHaveLength(initialStates.length - 1);
 
-        const deletedState = await prisma.estado.findUnique({ where: { id: state.id } });
+        const deletedState = await prisma.state.findUnique({ where: { id: state.id } });
         expect(deletedState).toBeNull();
     });
 
@@ -134,7 +134,7 @@ describe('DELETE /api/state/:id', () => {
     });
 });
 afterEach(async () => {
-    await prisma.estado.deleteMany();
+    await prisma.state.deleteMany();
 });
 afterAll(async () => {
     await prisma.$disconnect();

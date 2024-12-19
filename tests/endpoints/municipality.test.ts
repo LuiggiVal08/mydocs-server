@@ -7,10 +7,10 @@ const api = request(serverApp);
 
 const MUNICIPALITIES = [
     {
-        nombre: 'Municipio 1',
+        name: 'Municipio 1',
     },
     {
-        nombre: 'Municipio 2',
+        name: 'Municipio 2',
     },
 ];
 
@@ -20,19 +20,18 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-    await prisma.municipio.deleteMany();
+    await prisma.municipality.deleteMany();
 
     for (const municipality of MUNICIPALITIES) {
         let { body } = await api.get('/api/state');
         const states = body.data.states;
-        console.log(body);
         let state;
         if (states.length > 0) {
             state = states[0];
         } else {
-            state = await prisma.estado.create({ data: { nombre: 'Estado 1' } });
+            state = await prisma.state.create({ data: { name: 'Estado 1' } });
         }
-        await prisma.municipio.create({ data: { nombre: municipality.nombre, estadoId: state.id } });
+        await prisma.municipality.create({ data: { name: municipality.name, stateId: state.id } });
     }
 });
 
@@ -54,7 +53,7 @@ describe('Municipality API', () => {
 
     describe('GET /api/municipality/:id', () => {
         it('should return a municipality by id', async () => {
-            const municipality = await prisma.municipio.findFirst();
+            const municipality = await prisma.municipality.findFirst();
             await api
                 .get(`/api/municipality/${municipality.id}`)
                 .expect(200)
@@ -71,8 +70,8 @@ describe('Municipality API', () => {
 
     describe('POST /api/municipality', () => {
         it('should create a new municipality', async () => {
-            const state = await prisma.estado.findFirst();
-            const newMunicipality = { nombre: 'Municipio 3', estadoId: state.id };
+            const state = await prisma.state.findFirst();
+            const newMunicipality = { name: 'Municipio 3', stateId: state.id };
             await api
                 .post('/api/municipality')
                 .send(newMunicipality)
@@ -97,8 +96,8 @@ describe('Municipality API', () => {
 
     describe('PUT /api/municipality/:id', () => {
         it('should update an existing municipality', async () => {
-            const municipality = await prisma.municipio.findFirst();
-            const updatedMunicipality = { nombre: 'Municipio Actualizado', estadoId: municipality.estadoId };
+            const municipality = await prisma.municipality.findFirst();
+            const updatedMunicipality = { name: 'Municipio Actualizado', stateId: municipality.stateId };
             await api
                 .put(`/api/municipality/${municipality.id}`)
                 .send(updatedMunicipality)
@@ -112,8 +111,8 @@ describe('Municipality API', () => {
             expect(response.body).toEqual({ message: 'municipio no encontrado' });
         });
         it('should fail to update a municipality with invalid data', async () => {
-            const municipality = await prisma.municipio.findFirst();
-            const updatedMunicipality = { nombre: '', estadoId: '' };
+            const municipality = await prisma.municipality.findFirst();
+            const updatedMunicipality = { name: '', stateId: '' };
             const response = await api
                 .put(`/api/municipality/${municipality.id}`)
                 .send(updatedMunicipality)
@@ -125,7 +124,7 @@ describe('Municipality API', () => {
 
     describe('DELETE /api/municipality/:id', () => {
         it('should delete a municipality', async () => {
-            const municipality = await prisma.municipio.findFirst();
+            const municipality = await prisma.municipality.findFirst();
             await api
                 .delete(`/api/municipality/${municipality.id}`)
                 .expect(200)

@@ -10,7 +10,7 @@ beforeAll(async () => {
     server.close();
 });
 beforeEach(async () => {
-    await prisma.usuario.deleteMany();
+    await prisma.user.deleteMany();
 });
 
 describe('/api/users', () => {

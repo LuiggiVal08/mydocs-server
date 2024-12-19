@@ -4,14 +4,14 @@ import { Request, Response } from 'express';
 import z from 'zod';
 
 const MunicipalitySchema = z.object({
-    nombre: z.string().min(3),
-    estadoId: z.string(),
+    name: z.string().min(3),
+    stateId: z.string(),
 });
 
 class Municipality {
     static async getAll(_req: Request, res: Response) {
         try {
-            const municipality = await prisma.municipio.findMany();
+            const municipality = await prisma.municipality.findMany();
             res.status(200).json({ data: { municipality } });
         } catch (error) {
             logger.error(error);
@@ -24,7 +24,7 @@ class Municipality {
     static async getById(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const municipality = await prisma.municipio.findUnique({ where: { id } });
+            const municipality = await prisma.municipality.findUnique({ where: { id } });
             if (!municipality) {
                 res.status(404).json({ message: 'municipio no encontrado' });
                 return;
@@ -46,7 +46,7 @@ class Municipality {
                 res.status(400).json({ message: parsed.error.message });
                 return;
             }
-            const municipality = await prisma.municipio.create({ data: body });
+            const municipality = await prisma.municipality.create({ data: body });
             res.status(201).json({ data: { municipality } });
         } catch (error) {
             logger.error(error);
@@ -59,7 +59,7 @@ class Municipality {
     static async update(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const ifMunicipality = await prisma.municipio.findUnique({ where: { id } });
+            const ifMunicipality = await prisma.municipality.findUnique({ where: { id } });
             if (!ifMunicipality) {
                 res.status(404).json({ message: 'municipio no encontrado' });
                 return;
@@ -70,7 +70,7 @@ class Municipality {
                 res.status(400).json({ message: parsed.error.message });
                 return;
             }
-            const municipality = await prisma.municipio.update({ where: { id }, data: body });
+            const municipality = await prisma.municipality.update({ where: { id }, data: body });
             res.status(200).json({ data: municipality });
         } catch (error) {
             logger.error(error);
@@ -83,12 +83,12 @@ class Municipality {
     static async delete(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const municipality = await prisma.municipio.findUnique({ where: { id } });
+            const municipality = await prisma.municipality.findUnique({ where: { id } });
             if (!municipality) {
                 res.status(404).json({ message: 'Estado no encontrado' });
                 return;
             }
-            await prisma.municipio.delete({ where: { id } });
+            await prisma.municipality.delete({ where: { id } });
             res.status(200).json({ message: 'Estado eliminado' });
         } catch (error) {
             logger.error(error);
