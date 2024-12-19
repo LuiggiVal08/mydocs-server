@@ -8,10 +8,14 @@ console.log(NODE_ENV);
 
 loadEnvFile();
 
-export const productionPrisma = new ProductionClient().$extends(withAccelerate());
-export const developmentPrisma = new DevelopmentClient().$extends(withAccelerate());
-export const testPrisma = new TestClient().$extends(withAccelerate());
+export const productionPrisma = new ProductionClient();
+export const developmentPrisma = new DevelopmentClient();
+export const testPrisma = new TestClient();
 
 const prisma = testPrisma;
+
+// prisma: ProductionClient | DevelopmentClient | TestClient;
+prisma.$connect();
+prisma.$extends(withAccelerate());
 
 export default prisma;
