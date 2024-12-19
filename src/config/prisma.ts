@@ -4,13 +4,18 @@ import { PrismaClient as ProductionClient } from '@prisma-client/production/clie
 import { PrismaClient as DevelopmentClient } from '@prisma-client/development/client';
 import { PrismaClient as TestClient } from '@prisma-client/test/client';
 const { NODE_ENV } = env;
+console.log(NODE_ENV);
 
 loadEnvFile();
 
-export const productionPrisma = new ProductionClient().$extends(withAccelerate());
-export const developmentPrisma = new DevelopmentClient().$extends(withAccelerate());
-export const testPrisma = new TestClient().$extends(withAccelerate());
+export const productionPrisma = new ProductionClient();
+export const developmentPrisma = new DevelopmentClient();
+export const testPrisma = new TestClient();
 
-const prisma = NODE_ENV === 'production' ? productionPrisma : NODE_ENV === 'test' ? testPrisma : developmentPrisma;
+const prisma = testPrisma;
+
+// prisma: ProductionClient | DevelopmentClient | TestClient;
+prisma.$connect();
+prisma.$extends(withAccelerate());
 
 export default prisma;

@@ -4,9 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   url      = env("DATABASE_URL_DEV")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Estado {
