@@ -5,15 +5,15 @@ on:
         branches: ['main', 'dev']
     pull_request:
         branches: ['main', 'dev']
+
 jobs:
     build:
         runs-on: ubuntu-24.04
         env:
-            DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }} # Agrega esta línea
-            DATABASE_URL_DEVELOPMENT: ${{ secrets.DATABASE_URL_DEV }} # Agrega esta línea
-            DATABASE_URL_PRODUCTION: ${{ secrets.DATABASE_URL_PROD }} # Agrega esta línea
-            JWT_SECRET: ${{ secrets.JWT_SECRET }} # Agrega esta línea
-
+            DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }}
+            DATABASE_URL_DEVELOPMENT: ${{ secrets.DATABASE_URL_DEV }}
+            DATABASE_URL_PRODUCTION: ${{ secrets.DATABASE_URL_PROD }}
+            JWT_SECRET: ${{ secrets.JWT_SECRET }}
         strategy:
             matrix:
                 node-version: [22.x]
@@ -21,25 +21,33 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
+
             - name: Create .env file
               run: |
                   echo "DATABASE_URL_TEST=${{ secrets.DATABASE_URL_TEST }}" >> .env
                   echo "DATABASE_URL_DEV=${{ secrets.DATABASE_URL_DEV }}" >> .env
                   echo "DATABASE_URL_PROD=${{ secrets.DATABASE_URL_PROD }}" >> .env
                   echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-                  # Agrega otras variables de entorno necesarias aquí
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
+
             - name: Install dependencies
               run: npm install
+
             - name: Run linter
               run: npm run lint
+
             - name: Generate Prisma Client
-              run: npx prisma generate --schema=prisma/test/schema.prisma && npx prisma generate --schema=prisma/development/schema.prisma && npx prisma generate --schema=prisma/production/schema.prisma
+              run: |
+                  npx prisma generate --schema=prisma/test/schema.prisma
+                  npx prisma generate --schema=prisma/development/schema.prisma
+                  npx prisma generate --schema=prisma/production/schema.prisma
+
             - name: Run tests
               run: npm run test
+
             - name: Run build
               run: npm run build
