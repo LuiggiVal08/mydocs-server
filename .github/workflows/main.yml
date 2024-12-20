@@ -58,6 +58,11 @@ jobs:
                   echo "DATABASE_URL_DEV=${{ secrets.DATABASE_URL_DEV }}" >> .env
                   echo "DATABASE_URL_PROD=${{ secrets.DATABASE_URL_PROD }}" >> .env
                   echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            - name: Upload .env artifact
+              uses: actions/upload-artifact@v3
+              with:
+                  name: env-file
+                  path: .env
             - name: Generate Prisma Client
               run: npm run prisma:generate-client
             - name: Run tests
@@ -78,7 +83,12 @@ jobs:
 
             - name: Install dependencies
               run: npm ci --no-fund --no-audit --no-progress --no-warnings
-
+            - name: Download .env artifact
+              uses: actions/download-artifact@v3
+              with:
+                  name: env-file
+            - name: Generate Prisma Client
+              run: npm run prisma:generate-client
             - name: Run build
               run: npm run build
 
