@@ -58,6 +58,8 @@ jobs:
                   echo "DATABASE_URL_DEV=${{ secrets.DATABASE_URL_DEV }}" >> .env
                   echo "DATABASE_URL_PROD=${{ secrets.DATABASE_URL_PROD }}" >> .env
                   echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            - name: Generate Prisma Client
+              run: npm run prisma:generate-client
             - name: Run tests
               run: npm run test
 

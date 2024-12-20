@@ -10,7 +10,8 @@
         "test": "cross-env NODE_ENV=test jest --silent --runInBand",
         "test:endpoints": "npm run test -- --testPathPattern=tests/endpoints",
         "lint": "eslint ./src",
-        "build": "tsc && tsc-alias --verbose"
+        "build": "tsc && tsc-alias --verbose",
+        "prisma:generate-client": "prisma generate --schema=prisma/test/schema.prisma && prisma generate --schema=prisma/development/schema.prisma && prisma generate --schema=prisma/production/schema.prisma"
     },
     "keywords": [],
     "author": "Luis Valencia",
