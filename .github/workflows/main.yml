@@ -2,7 +2,7 @@ name: deploy
 
 on:
     push:
-        branches: ['main', 'dev']
+        branches: ['main']
     pull_request:
         branches: ['main', 'dev']
 
@@ -16,7 +16,7 @@ jobs:
             JWT_SECRET: ${{ secrets.JWT_SECRET }}
         strategy:
             matrix:
-                node-version: [22.x]
+                node-version: [22.x, 20.x]
 
         steps:
             - name: Cancel Previous Runs
