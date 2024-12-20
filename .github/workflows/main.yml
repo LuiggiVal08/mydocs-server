@@ -17,7 +17,6 @@ jobs:
 
     lint:
         runs-on: ubuntu-22.04
-        needs: avoid_redundancy
         steps:
             - name: Checkout
               uses: actions/checkout@v3
