@@ -40,7 +40,7 @@ jobs:
                   cache: 'npm'
 
             - name: Install dependencies
-              run: npm ci
+              run: npm ci --no-fund --no-audit --no-optional --no-progress
 
             - name: Run linter
               run: npm run lint
