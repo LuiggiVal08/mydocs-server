@@ -35,7 +35,6 @@ jobs:
 
     test:
         runs-on: ubuntu-22.04
-        needs: lint
         strategy:
             matrix:
                 node-version: [22.x, 20.x]
