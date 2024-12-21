@@ -13,7 +13,7 @@ beforeEach(async () => {
     await prisma.user.deleteMany();
 });
 
-describe('/api/users', () => {
+describe('/api/user', () => {
     it('users are return as json', async () => {
         await api
             .get('/api/users')
