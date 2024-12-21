@@ -2,6 +2,7 @@ import { Server, IncomingMessage, ServerResponse } from 'node:http';
 import { colors, PORT } from '@/config';
 import logger from '@/config/logger';
 import { Application } from 'express';
+import wellcome from '@/helpers/wellcome';
 
 const PORT_SERVER: number = parseInt(PORT || '3000', 10);
 /**
@@ -18,6 +19,7 @@ const exposeHost = async (
     if (addresses.length > 0) hostname = addresses[0];
 
     const serverListen = server.listen(PORT_SERVER, hostname, () => {
+        wellcome();
         if (addresses.length > 0) {
             logger.info(`El servidor está disponible en las siguientes direcciones:`);
             logger.info(

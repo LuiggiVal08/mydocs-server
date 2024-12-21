@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import app from '@/app/app';
-import router from '@/app/routes/index.routes';
+import router from '@/app/routes';
 // import configSocket, { connSocket } from '@/services/socket';
 import exposeHost from '@/services/exposeHost';
 import { getServerAddresses } from './helpers/getServerAddress';

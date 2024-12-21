@@ -5,7 +5,7 @@
     "icon": "./public/favicon.ico",
     "type": "commonjs",
     "scripts": {
-        "start": "cross-env NODE_ENV=production node ./dist/src/index.js",
+        "start": "cross-env NODE_ENV=production node --watch ./dist/index.js",
         "dev": "cross-env NODE_ENV=develoment ts-node-dev -r tsconfig-paths/register ./src/index.ts",
         "test": "cross-env NODE_ENV=test jest --silent --runInBand",
         "test:endpoints": "npm run test -- --testPathPattern=tests/endpoints",

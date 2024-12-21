@@ -1,19 +1,19 @@
 import cookieParser from 'cookie-parser';
 import express from 'express';
-// import morgan from 'morgan';
+import morgan from 'morgan';
 import cors from 'cors';
 import { crossOrigin } from '@/config';
-// import logger from '@/config/logger';
+import logger from '@/config/logger';
 import path from 'node:path';
 
 const app = express();
 
 app.use(express.json());
-// app.use(
-//     morgan('dev', {
-//         stream: { write: (message) => logger.info(message.trim()) },
-//     }),
-// );
+app.use(
+    morgan('short', {
+        stream: { write: (message) => logger.info(message.trim()) },
+    }),
+);
 app.use(cookieParser());
 app.disabled('x-powered-by');
 app.use(
