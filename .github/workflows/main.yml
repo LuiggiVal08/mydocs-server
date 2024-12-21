@@ -100,11 +100,16 @@ jobs:
               run: npm run build
 
     deploy:
-        runs-on: ubuntu-22.04
+        if: github.event_name == 'push'
         needs: build
+        runs-on: ubuntu-22.04
+        container: ghcr.io/railwayapp/cli:latest
+        env:
+            SVC_ID: my-service-id
+            RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         steps:
             - name: Checkout
               uses: actions/checkout@v3
 
             - name: Deploy to Hosting
-              run: echo "Add your deployment command here"
+              run: railway up --service=9b96f13c-d30d-4d40-9bc0-5709a8ba4fc7
