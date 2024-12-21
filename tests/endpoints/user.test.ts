@@ -16,7 +16,7 @@ beforeEach(async () => {
 describe('/api/user', () => {
     it('users are return as json', async () => {
         await api
-            .get('/api/users')
+            .get('/api/user')
             .expect(200)
             .expect('Content-Type', /application\/json/);
     });
