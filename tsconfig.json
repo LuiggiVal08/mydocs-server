@@ -1,0 +1,45 @@
+{
+    "compilerOptions": {
+        "target": "ES2023",
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "outDir": "./dist",
+        "rootDir": "./", // Cambiado a ./src
+        "baseUrl": "./",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ],
+            "@": [
+                "src/index"
+            ],
+        },
+        "resolveJsonModule": true,
+        "sourceMap": true,
+        "removeComments": true,
+        "noEmitHelpers": false,
+        "noEmitOnError": false,
+        "esModuleInterop": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": false,
+        "strictPropertyInitialization": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    },
+    "include": [
+        "src/**/*",
+        "tests/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "build",
+        "dist",
+        // "tests"
+    ]
+}

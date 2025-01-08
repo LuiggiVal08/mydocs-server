@@ -1,0 +1,24 @@
+# Activar la reescritura de URLs
+RewriteEngine On
+
+# Redirige las solicitudes a la carpeta 'public' para archivos estáticos
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(css|js|images|fonts)/(.+\.(css|js|png|jpg|gif|ico|svg|woff|woff2|ttf|eot))$ public/$1/$2 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.js [NC,L]
+
+# Redirige todas las demás solicitudes al archivo index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+
+# Configura el acceso a los archivos .ht* para denegar el acceso
+<Files ~ "^.*\.([Hh][Tt][Aa])">
+    Order allow,deny
+    Deny from all
+    Satisfy all
+</Files>
