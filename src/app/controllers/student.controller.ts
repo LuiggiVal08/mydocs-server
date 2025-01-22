@@ -1,91 +1,95 @@
-import logger from '@/config/logger';
-
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import z from 'zod';
 import models from '@/app/models';
+import logger from '@/config/logger';
+import handdleErrorsController from '@/helpers/handdleErrorsController';
 
 const schemaStudent = z.object({
-    usuarioId: z.string().uuid(),
-    activo: z.boolean(),
+    id: z.string().optional(),
+    userId: z.string().uuid(),
+    active: z.boolean(),
 });
 
 class Student {
-    static async getAll(_req: Request, res: Response) {
+    static async getAll(req: Request, res: Response): Promise<void> {
         try {
             const students = await models.Student.findAll({ include: { all: true } });
             res.status(200).json({ data: { students } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 
-    static async getById(req: Request, res: Response) {
+    static async getById(req: Request, res: Response): Promise<void> {
         try {
+            const { id } = req.params;
+            const student = await models.Student.findByPk(id);
+            if (!student) {
+                return void res.status(404).json({ message: 'Estudiante no encontrado' });
+            }
+
+            res.status(200).json({ data: { student } });
+        } catch (error) {
+            return handdleErrorsController(error, res, req);
+        }
+    }
+
+    static async create(req: Request, res: Response): Promise<void> {
+        try {
+            const { body } = req;
+            const parsed = schemaStudent.safeParse(body);
+            if (!parsed.success) {
+                res.status(400).json({ message: parsed.error.message });
+                return;
+            }
+            const user = await models.User.findByPk(parsed.data.userId);
+            if (!user) {
+                return void res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+            const student = await models.Student.create(body);
+            res.status(201).json({ data: { student } });
+        } catch (error) {
+            return handdleErrorsController(error, res, req);
+        }
+    }
+
+    static async update(req: Request, res: Response) {
+        try {
+            const { body } = req;
             const { id } = req.params;
             const student = await models.Student.findByPk(id);
             if (!student) {
                 res.status(404).json({ message: 'Estudiante no encontrado' });
                 return;
             }
-            res.status(200).json({ data: { student } });
-        } catch (error) {
-            logger.error(error);
-            res.status(400).end();
-        }
-    }
-
-    static async create(req: Request, res: Response) {
-        try {
-            const { body } = req;
             const parsed = schemaStudent.safeParse(body);
             if (!parsed.success) {
+                logger.error(parsed.error);
                 res.status(400).json({ message: parsed.error.message });
                 return;
             }
-            const student = await models.Student.create(body);
-            res.status(201).json({ data: { student } });
-        } catch (error) {
-            logger.error(error);
-            res.status(400).end();
-        }
-    }
-
-    static async update(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-            const existStudent = await models.Student.findByPk(id);
-            if (!existStudent) {
-                res.status(404).json({ message: 'Estudiante no encontrado' });
-                return;
-            }
-            const { body } = req;
-            const parsed = schemaStudent.safeParse(body);
-            if (!parsed.success) {
-                res.status(400).json({ message: parsed.error.message });
-                return;
-            }
-            const student = await models.Student.update(body, { where: { id } });
+            const updateStudent = {
+                ...student.dataValues,
+                ...parsed.data,
+            };
+            await student.update(updateStudent);
             res.status(200).json({ data: { student } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 
-    static async delete(req: Request, res: Response) {
+    static async delete(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
         try {
-            const { id } = req.params;
-            const existStudent = await models.Student.findByPk(id);
-            if (!existStudent) {
-                res.status(404).json({ message: 'Estudiante no encontrado' });
-                return;
+            const student = await models.Student.findByPk(id);
+            if (!student) {
+                return void res.status(404).json({ message: 'Estudiante no encontrado' });
             }
-            await models.Student.destroy({ where: { id } });
-            res.status(204).end();
+            await student.destroy();
+            res.status(200).json({ message: 'Estudiante eliminado' });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 }
