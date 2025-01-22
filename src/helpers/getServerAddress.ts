@@ -1,3 +1,4 @@
+import logger from '@/config/logger';
 import os from 'node:os';
 import { argv } from 'node:process';
 /**
@@ -24,7 +25,7 @@ export const getServerAddresses = (): string[] => {
         }
         return addresses;
     } catch (error) {
-        console.error(`Error accessing network interfaces: ${error}`);
+        logger.error(`Error accessing network interfaces: ${error}`);
         return [];
     }
 };
