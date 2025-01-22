@@ -1,5 +1,5 @@
-import { Request } from 'express';
-import { JwtPayload } from 'jsonwebtoken';
+import type { Request } from 'express';
+import type { JwtPayload } from 'jsonwebtoken';
 
 /**
  * Defines the structure of the JWT payload for user requests.
@@ -8,7 +8,7 @@ import { JwtPayload } from 'jsonwebtoken';
  */
 interface JwtPayloadUserReq extends JwtPayload {
     userId: string; // UUID como string
-    roleId: number; // ID de rol como número
+    roleId?: number; // ID de rol como número
 }
 
 /**

@@ -10,12 +10,28 @@ import {
     HasMany,
 } from 'sequelize-typescript';
 import User from './User';
-import Role from './Role';
-import Withdrawal from './Withdrawal';
-import Enrollment from './Enrollment';
+import Role, { RoleAttributes } from './Role';
+import Withdrawal, { WithdrawalAttributes } from './Withdrawal';
+import Enrollment, { EnrollmentAttributes } from './Enrollment';
+//
 
-@Table({ tableName: 'administrator' })
-class Administrator extends Model<Administrator> {
+interface AdministratorAttributes {
+    id: string;
+    userId: string;
+    roleId: string;
+    status?: 'Activo' | 'Inactivo';
+    role?: RoleAttributes;
+    withdrawals?: WithdrawalAttributes[];
+    enrollments?: EnrollmentAttributes[];
+}
+
+interface AdministratorCreationAttributes extends Omit<AdministratorAttributes, 'id' | 'withdrawals' | 'enrollments'> {}
+export { AdministratorAttributes, AdministratorCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'administrator',
+})
+class Administrator extends Model<AdministratorAttributes, AdministratorCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -29,19 +45,21 @@ class Administrator extends Model<Administrator> {
     @Column(DataType.UUID)
     declare roleId: string;
 
+    @Default('Inactivo')
     @Column(DataType.STRING(50))
     declare status: string;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, { onDelete: 'CASCADE' })
     user: User;
 
-    @BelongsTo(() => Role)
+    @BelongsTo(() => Role, { onDelete: 'SET NULL' })
     role: Role;
 
-    @HasMany(() => Withdrawal)
+    @HasMany(() => Withdrawal, { onDelete: 'SET NULL' })
     withdrawals: Withdrawal[];
 
-    @HasMany(() => Enrollment)
+    @HasMany(() => Enrollment, { onDelete: 'SET NULL' })
     enrollments: Enrollment[];
 }
+
 export default Administrator;

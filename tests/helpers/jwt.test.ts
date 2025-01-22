@@ -1,56 +1,51 @@
-import jwt from 'jsonwebtoken';
-import generateToken from '@/helpers/jwt';
+import jwt from '@/helpers/jwt';
+import jsonwebtoken from 'jsonwebtoken';
 import { JWT_SECRET } from '@/constants';
 
 jest.mock('jsonwebtoken', () => ({
     sign: jest.fn(),
 }));
 
-describe('generateToken', () => {
+describe('jwt', () => {
     const payload = { userId: '123' };
-    const secret = JWT_SECRET ?? 'secreto';
 
-    beforeAll(() => {
-        process.env.JWT_SECRET = secret; // Establece el secreto en el entorno
-    });
-
-    it('should generate a JWT token successfully', async () => {
+    it('should generate a JWT token successfully for "access" type', async () => {
         const mockToken = 'mockToken123';
-        (jwt.sign as jest.Mock).mockResolvedValue(mockToken); // Simula el retorno de jwt.sign
+        (jsonwebtoken.sign as jest.Mock).mockResolvedValue(mockToken); // Simula el retorno de jsonwebtoken.sign
 
-        const token = await generateToken(payload);
+        const token = await jwt(payload, 'access');
 
         expect(token).toBe(mockToken); // Verifica que el token generado sea el esperado
-        expect(jwt.sign).toHaveBeenCalledWith(payload, secret, {
+        expect(jsonwebtoken.sign).toHaveBeenCalledWith(payload, JWT_SECRET, {
             expiresIn: '15m',
             algorithm: 'HS256',
-        }); // Verifica que jwt.sign fue llamado con los parámetros correctos
+        }); // Verifica los argumentos de jsonwebtoken.sign
     });
 
     it('should throw an error if token generation fails', async () => {
         const errorMessage = 'Token generation error';
-        (jwt.sign as jest.Mock).mockRejectedValue(new Error(errorMessage)); // Simula un error en jwt.sign
+        (jsonwebtoken.sign as jest.Mock).mockRejectedValue(new Error(errorMessage)); // Simula un error en jsonwebtoken.sign
 
-        await expect(generateToken(payload)).rejects.toThrow(errorMessage); // Verifica que se lance el error correcto
+        await expect(jwt(payload, 'access')).rejects.toThrow(errorMessage); // Verifica que se lance el error correcto
     });
 
     it('should throw an error if payload is undefined', async () => {
-        await expect(generateToken(undefined)).rejects.toThrow(); // Verifica que se lance un error
+        await expect(jwt(undefined, 'access')).rejects.toThrow('Payload is required'); // Verifica que se lance un error
     });
 
     it('should throw an error if payload is null', async () => {
-        await expect(generateToken(null)).rejects.toThrow(); // Verifica que se lance un error
+        await expect(jwt(null, 'access')).rejects.toThrow('Payload is required'); // Verifica que se lance un error
     });
 
     it('should handle string payload', async () => {
         const stringPayload = 'this is a string payload';
         const mockToken = 'mockStringToken123';
-        (jwt.sign as jest.Mock).mockResolvedValue(mockToken);
+        (jsonwebtoken.sign as jest.Mock).mockResolvedValue(mockToken);
 
-        const token = await generateToken(stringPayload);
+        const token = await jwt(stringPayload, 'access');
 
         expect(token).toBe(mockToken);
-        expect(jwt.sign).toHaveBeenCalledWith(stringPayload, secret, {
+        expect(jsonwebtoken.sign).toHaveBeenCalledWith(stringPayload, JWT_SECRET, {
             expiresIn: '15m',
             algorithm: 'HS256',
         });
@@ -59,25 +54,25 @@ describe('generateToken', () => {
     it('should handle Buffer payload', async () => {
         const bufferPayload = Buffer.from('this is a Buffer payload');
         const mockToken = 'mockBufferToken123';
-        (jwt.sign as jest.Mock).mockResolvedValue(mockToken);
+        (jsonwebtoken.sign as jest.Mock).mockResolvedValue(mockToken);
 
-        const token = await generateToken(bufferPayload);
+        const token = await jwt(bufferPayload, 'access');
 
         expect(token).toBe(mockToken);
-        expect(jwt.sign).toHaveBeenCalledWith(bufferPayload, secret, {
+        expect(jsonwebtoken.sign).toHaveBeenCalledWith(bufferPayload, JWT_SECRET, {
             expiresIn: '15m',
             algorithm: 'HS256',
         });
     });
-    it('should use the default secret if JWT_SECRET is undefined', async () => {
-        delete process.env.JWT_SECRET; // Elimina el secreto para simular que no está definido
-        const mockToken = 'mockTokenWithDefaultSecret';
-        (jwt.sign as jest.Mock).mockResolvedValue(mockToken);
 
-        const token = await generateToken(payload);
+    it('should generate a JWT token successfully for "refresh" type', async () => {
+        const mockToken = 'mockRefreshToken123';
+        (jsonwebtoken.sign as jest.Mock).mockResolvedValue(mockToken);
+
+        const token = await jwt(payload, 'refresh');
 
         expect(token).toBe(mockToken);
-        expect(jwt.sign).toHaveBeenCalledWith(payload, secret, {
+        expect(jsonwebtoken.sign).toHaveBeenCalledWith(payload, JWT_SECRET, {
             expiresIn: '15m',
             algorithm: 'HS256',
         });

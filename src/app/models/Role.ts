@@ -1,10 +1,24 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, HasMany } from 'sequelize-typescript';
 
-import PermissionRole from './PermissionRole';
-import Administrator from './Administrator';
+import PermissionRole, { PermissionRoleAttributes } from './PermissionRole';
+import Administrator, { AdministratorAttributes } from './Administrator';
+//
+interface RoleAttributes {
+    id: string;
+    name: string;
+    administrators: AdministratorAttributes[];
+    permissionRoles: PermissionRoleAttributes[];
+}
 
-@Table({ tableName: 'role' })
-class Role extends Model<Role> {
+interface RoleCreationAttributes extends Omit<RoleAttributes, 'id' | 'administrators' | 'permissionRoles'> {}
+
+export { RoleAttributes, RoleCreationAttributes };
+
+@Table({
+    timestamps: true,
+    tableName: 'role',
+})
+class Role extends Model<RoleAttributes, RoleCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -13,10 +27,10 @@ class Role extends Model<Role> {
     @Column(DataType.STRING)
     declare name: string;
 
-    @HasMany(() => Administrator)
+    @HasMany(() => Administrator, { onDelete: 'RESTRICT' })
     administrators: Administrator[];
 
-    @HasMany(() => PermissionRole)
+    @HasMany(() => PermissionRole, { onDelete: 'SET NULL' })
     permissionRoles: PermissionRole[];
 }
 export default Role;

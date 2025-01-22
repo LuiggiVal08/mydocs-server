@@ -1,9 +1,38 @@
-import { Column, Model, PrimaryKey, Table, DataType, Default, HasMany } from 'sequelize-typescript';
-import Graduate from './Graduate';
-import Route from './Route';
+import {
+    Column,
+    Model,
+    PrimaryKey,
+    Table,
+    DataType,
+    Default,
+    HasMany,
+    ForeignKey,
+    BelongsTo,
+} from 'sequelize-typescript';
+import Graduate, { GraduateAttributes } from './Graduate';
+import CourseAcademic, { CourseAcademicAttributes } from './CourseAcademic';
+import Core, { CoreAttributes } from './Core';
 
-@Table({ tableName: 'pnf' })
-class Pnf extends Model<Pnf> {
+// Interface for Pnf attributes
+interface PnfAttributes {
+    id: string;
+    name: string;
+    description: string;
+    periodicity: string;
+    coreId: string;
+    core: CoreAttributes;
+    graduates: GraduateAttributes[];
+    courseAcademic: CourseAcademicAttributes[];
+}
+
+// Interface for Pnf creation attributes
+interface PnfCreationAttributes extends Omit<PnfAttributes, 'id' | 'graduates' | 'courseAcademic' | 'core'> {}
+export { PnfAttributes, PnfCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'pnf',
+})
+class Pnf extends Model<PnfAttributes, PnfCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -18,10 +47,17 @@ class Pnf extends Model<Pnf> {
     @Column(DataType.STRING(20))
     declare periodicity: string;
 
-    @HasMany(() => Graduate)
+    @ForeignKey(() => Core)
+    @Column(DataType.UUID)
+    coreId: string;
+
+    @BelongsTo(() => Core)
+    core: Core;
+
+    @HasMany(() => Graduate, { onDelete: 'RESTRICT' })
     graduates: Graduate[];
 
-    @HasMany(() => Route)
-    routes: Route[];
+    @HasMany(() => CourseAcademic, { onDelete: 'CASCADE' })
+    courseAcademic: CourseAcademic[];
 }
 export default Pnf;

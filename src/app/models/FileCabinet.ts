@@ -1,8 +1,22 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, HasMany } from 'sequelize-typescript';
-import Level from './Level';
+import Level, { LevelAttributes } from './Level';
 
-@Table({ tableName: 'file_cabinet' })
-class FileCabinet extends Model<FileCabinet> {
+interface FileCabinetAttributes {
+    id: string;
+    name: string;
+    status: string;
+    location: string;
+    levels: LevelAttributes[];
+}
+
+interface FileCabinetCreationAttributes extends Omit<FileCabinetAttributes, 'id' | 'levels'> {}
+
+export { FileCabinetAttributes, FileCabinetCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'file_cabinet',
+})
+class FileCabinet extends Model<FileCabinetAttributes, FileCabinetCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -17,7 +31,7 @@ class FileCabinet extends Model<FileCabinet> {
     @Column(DataType.TEXT)
     declare location: string;
 
-    @HasMany(() => Level)
+    @HasMany(() => Level, { onDelete: 'CASCADE' })
     levels: Level[];
 }
 export default FileCabinet;

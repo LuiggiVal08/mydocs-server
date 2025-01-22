@@ -1,5 +1,5 @@
-import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest } from '@/types/auth';
+import type { Response, NextFunction } from 'express';
+import type { AuthenticatedRequest } from '@/types/auth';
 
 // Middleware para verificar si el usuario es administrador
 export const isAdmin = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

@@ -9,11 +9,26 @@ import {
     BelongsTo,
     HasMany,
 } from 'sequelize-typescript';
-import Building from './Building';
-import ClassSchedule from './ClassSchedule';
+import Building, { BuildingAttributes } from './Building';
+import ClassSchedule, { ClassScheduleAttributes } from './ClassSchedule';
 
-@Table({ tableName: 'classroom' })
-class Classroom extends Model<Classroom> {
+interface ClassroomAttributes {
+    id: string;
+    buildingId: string;
+    name: string;
+    type: string;
+    building: BuildingAttributes;
+    classSchedules: ClassScheduleAttributes[];
+}
+
+interface ClassroomCreationAttributes extends Omit<ClassroomAttributes, 'id' | 'building' | 'classSchedules'> {}
+
+export { ClassroomAttributes, ClassroomCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'classroom',
+})
+class Classroom extends Model<ClassroomAttributes, ClassroomCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -29,10 +44,10 @@ class Classroom extends Model<Classroom> {
     @Column(DataType.STRING)
     declare type: string;
 
-    @BelongsTo(() => Building)
+    @BelongsTo(() => Building, { onDelete: 'CASCADE' })
     building: Building;
 
-    @HasMany(() => ClassSchedule)
+    @HasMany(() => ClassSchedule, { onDelete: 'SET NULL' })
     classSchedules: ClassSchedule[];
 }
 export default Classroom;

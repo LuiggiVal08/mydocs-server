@@ -1,21 +1,19 @@
-import logger from '@/config/logger';
-
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import z from 'zod';
 import models from '@/app/models';
+import handdleErrorsController from '@/helpers/handdleErrorsController';
 
 const StateSchema = z.object({
     name: z.string().min(3),
 });
 
 class State {
-    static async getAll(_req: Request, res: Response) {
+    static async getAll(req: Request, res: Response) {
         try {
             const states = await models.State.findAll();
             res.status(200).json({ data: { states } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 
@@ -29,8 +27,7 @@ class State {
             }
             res.status(200).json({ data: { state } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 
@@ -45,8 +42,7 @@ class State {
             const state = await models.State.create(body);
             res.status(201).json({ data: { state } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 
@@ -56,20 +52,20 @@ class State {
             const { body } = req;
             const parsed = StateSchema.safeParse(body);
             if (!parsed.success) {
-                res.status(400).json({ message: parsed.error.message });
+                res.status(400).json({ message: 'Datos invalidos', error: parsed.error });
                 return;
             }
             const state = await models.State.update(body, { where: { id } });
             res.status(200).json({ data: state });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 
     static async delete(req: Request, res: Response) {
+        const { id } = req.params;
+
         try {
-            const { id } = req.params;
             const state = await models.State.findByPk(id);
             if (!state) {
                 res.status(404).json({ message: 'Estado no encontrado' });
@@ -78,8 +74,7 @@ class State {
             await models.State.destroy({ where: { id } });
             res.status(200).json({ message: 'Estado eliminado' });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 }

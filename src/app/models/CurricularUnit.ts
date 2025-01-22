@@ -1,16 +1,41 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import Route from './Route';
+import CourseAcademic, { CourseAcademicAttributes } from './CourseAcademic';
 
-@Table({ tableName: 'curricular_unit' })
-class CurricularUnit extends Model<CurricularUnit> {
+// Interface for CurricularUnit attributes
+interface CurricularUnitAttributes {
+    code: string;
+    courseAcademicAt: string;
+    name: string;
+    credits: number;
+    hte: number;
+    htea: number;
+    htei: number;
+    weeklyHours: number;
+    duration: number;
+    minimumPassingGrade: number;
+    minimumRecoveryGrade: number;
+    minimumPerGrade: number;
+    minimumAttendancePercentage: number;
+    courseAcademic: CourseAcademicAttributes; //  trayecto
+}
+
+// Interface for CurricularUnit creation attributes
+interface CurricularUnitCreationAttributes extends Omit<CurricularUnitAttributes, 'code' | 'courseAcademic'> {}
+
+export { CurricularUnitAttributes, CurricularUnitCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'curricular_unit',
+})
+class CurricularUnit extends Model<CurricularUnitAttributes, CurricularUnitCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
     declare code: string;
 
-    @ForeignKey(() => Route)
+    @ForeignKey(() => CourseAcademic)
     @Column(DataType.UUID)
-    declare routeId: string;
+    declare courseAcademicAt: string;
 
     @Column(DataType.STRING)
     declare name: string;
@@ -45,7 +70,7 @@ class CurricularUnit extends Model<CurricularUnit> {
     @Column(DataType.DECIMAL(5, 2))
     declare minimumAttendancePercentage: number;
 
-    @BelongsTo(() => Route)
-    route: Route;
+    @BelongsTo(() => CourseAcademic)
+    courseAcademic: CourseAcademic;
 }
 export default CurricularUnit;

@@ -1,8 +1,25 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import User from './User';
+import User, { UserAttributes } from './User';
 
-@Table({ tableName: 'notification' })
-class Notification extends Model<Notification> {
+interface NotificationAttributes {
+    id: string;
+    userId: string;
+    qualification: string;
+    text: string;
+    url: string;
+    read: boolean;
+    date: Date;
+    user: UserAttributes;
+}
+
+interface NotificationCreationAttributes extends Omit<NotificationAttributes, 'id' | 'read' | 'user'> {}
+
+export { NotificationAttributes, NotificationCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'notification',
+})
+class Notification extends Model<NotificationAttributes, NotificationCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)

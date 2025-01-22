@@ -1,9 +1,27 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, HasMany } from 'sequelize-typescript';
-import RequestGraduate from './RequestGraduate';
-import StudentRequest from './StudentRequest';
+import RequestGraduate, { RequestGraduateAttributes } from './RequestGraduate';
+import StudentRequest, { StudentRequestAttributes } from './StudentRequest';
 
-@Table({ tableName: 'request_type' })
-class RequestType extends Model<RequestType> {
+// Interface for the attributes of the RequestType entity
+interface RequestTypeAttributes {
+    id: string;
+    name: string;
+    cost: number;
+    requestGraduates: RequestGraduateAttributes[];
+    studentRequests: StudentRequestAttributes[];
+}
+
+// Interface for the creation attributes of the RequestType entity
+interface RequestTypeCreationAttributes
+    extends Omit<RequestTypeAttributes, 'id' | 'requestGraduates' | 'studentRequests'> {}
+
+// Export the interfaces
+export { RequestTypeAttributes, RequestTypeCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'request_type',
+})
+class RequestType extends Model<RequestTypeAttributes, RequestTypeCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)

@@ -19,7 +19,7 @@ import Pnf from './Pnf';
 import Building from './Building';
 import Classroom from './Classroom';
 import ClassSchedule from './ClassSchedule';
-import Route from './Route';
+import CourseAcademic from './CourseAcademic';
 import CurricularUnit from './CurricularUnit';
 import AcademicPeriod from './AcademicPeriod';
 import Section from './Section';
@@ -29,7 +29,7 @@ import Enrollment from './Enrollment';
 import Note from './Note';
 import RequestType from './RequestType';
 import RequestGraduate from './RequestGraduate';
-import DetailPayment from './DetailPayment';
+import DetailPayment from './PaymentAccount';
 import Payment from './Payment';
 import StudentRequest from './StudentRequest';
 import FileCabinet from './FileCabinet';
@@ -39,6 +39,7 @@ import Document from './Document';
 import Extension from './Extension';
 import DocumentExtension from './DocumentExtension';
 import DocumentFolder from './DocumentFolder';
+import Core from './Core';
 
 const models = {
     User,
@@ -48,6 +49,7 @@ const models = {
     SecurityQuestion,
     SecurityResponse,
     Chat,
+    Core,
     Message,
     Notification,
     Session,
@@ -62,7 +64,7 @@ const models = {
     Building,
     Classroom,
     ClassSchedule,
-    Route,
+    CourseAcademic,
     CurricularUnit,
     AcademicPeriod,
     Section,

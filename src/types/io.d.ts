@@ -1,5 +1,3 @@
-import { Socket } from 'socket.io';
+import type { Socket } from 'socket.io';
 
-export interface UserSocketMap {
-    [userId: string]: Socket;
-}
+export type UserSocketMap = Record<string, Socket>;

@@ -2,8 +2,22 @@ import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, Belong
 import Document from './Document';
 import Extension from './Extension';
 
-@Table({ tableName: 'document_extension' })
-class DocumentExtension extends Model<DocumentExtension> {
+interface DocumentExtensionAttributes {
+    id: string;
+    documentId: string;
+    extensionId: string;
+    document: Document;
+    extension: Extension;
+}
+
+interface DocumentExtensionCreationAttributes
+    extends Omit<DocumentExtensionAttributes, 'id' | 'document' | 'extension'> {}
+export { DocumentExtensionAttributes, DocumentExtensionCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'document_extension',
+})
+class DocumentExtension extends Model<DocumentExtensionAttributes, DocumentExtensionCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)

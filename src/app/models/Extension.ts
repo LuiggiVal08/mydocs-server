@@ -1,7 +1,18 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default } from 'sequelize-typescript';
 
-@Table({ tableName: 'extension' })
-class Extension extends Model<Extension> {
+// Interface for the attributes of the Extension model
+export interface ExtensionAttributes {
+    id: string;
+    name: string;
+}
+
+// Interface for the creation attributes of the Extension model
+export interface ExtensionCreationAttributes extends Omit<ExtensionAttributes, 'id'> {}
+@Table({
+    timestamps: true,
+    tableName: 'extension',
+})
+class Extension extends Model<ExtensionAttributes, ExtensionCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)

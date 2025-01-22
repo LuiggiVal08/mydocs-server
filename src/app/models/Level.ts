@@ -1,8 +1,34 @@
-import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import FileCabinet from './FileCabinet';
+import {
+    Column,
+    Model,
+    PrimaryKey,
+    Table,
+    DataType,
+    Default,
+    ForeignKey,
+    BelongsTo,
+    HasMany,
+} from 'sequelize-typescript';
+import FileCabinet, { FileCabinetAttributes } from './FileCabinet';
+import Folder from './Folder';
 
-@Table({ tableName: 'level' })
-class Level extends Model<Level> {
+interface LevelAttributes {
+    id: string;
+    fileCabinetId: string;
+    name: string;
+    capacity: number;
+    status: boolean;
+    fileCabinet: FileCabinetAttributes;
+}
+
+interface LevelCreationAttributes extends Omit<LevelAttributes, 'id' | 'fileCabinet'> {}
+
+export { LevelAttributes, LevelCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'level',
+})
+class Level extends Model<LevelAttributes, LevelCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -21,7 +47,10 @@ class Level extends Model<Level> {
     @Column(DataType.BOOLEAN)
     declare status: boolean;
 
-    @BelongsTo(() => FileCabinet)
+    @BelongsTo(() => FileCabinet, { onDelete: 'CASCADE' })
     fileCabinet: FileCabinet;
+
+    @HasMany(() => Folder, { onDelete: 'RESTRICT' })
+    folders: Folder[];
 }
 export default Level;

@@ -1,4 +1,4 @@
-import { Dialect } from 'sequelize';
+import type { Dialect } from 'sequelize';
 
 interface ConfigConn {
     dialect: Dialect;

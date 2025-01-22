@@ -1,9 +1,25 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import Student from './Student';
-import Pnf from './Pnf';
+import Student, { StudentAttributes } from './Student';
+import Pnf, { PnfAttributes } from './Pnf';
 
-@Table({ tableName: 'graduate' })
-class Graduate extends Model<Graduate> {
+interface GraduateAttributes {
+    id: string;
+    studentId: string;
+    pnfId: string;
+    graduationDate: Date;
+    titleType: string;
+    student: StudentAttributes;
+    pnf: PnfAttributes;
+}
+
+interface GraduateCreationAttributes extends Omit<GraduateAttributes, 'id' | 'student' | 'pnf'> {}
+
+export { GraduateAttributes, GraduateCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'graduate',
+})
+class Graduate extends Model<GraduateAttributes, GraduateCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)

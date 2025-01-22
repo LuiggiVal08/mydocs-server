@@ -1,12 +1,14 @@
 import { config } from 'dotenv';
 import envVar from '@/schemas/envVar';
-import { UserSocketMap } from '@/types/io';
-import { ConnectionDB } from '@/types/dbConn';
+import type { UserSocketMap } from '@/types/io';
+import type { ConnectionDB } from '@/types/dbConn';
 
 config();
 
+export const { PORT, APP_SECRET, JWT_SECRET, JWT_REFRESH_SECRET, NODE_ENV, DATABASE_URL } = envVar.parse(process.env);
 export const ABORT_DELAY = 10000;
-export const { PORT, JWT_SECRET, NODE_ENV, DATABASE_URL } = envVar.parse(process.env);
+export const ACCESS_TOKEN_EXPIRY = '15m';
+export const REFRESH_TOKEN_EXPIRY = '7d';
 export const routeStatic = ['', 'images', 'assets', 'js', 'css'];
 export const userSockets: UserSocketMap = {};
 export const connDB: ConnectionDB = {
@@ -31,6 +33,7 @@ export const crossOrigin = [
     'http://localhost:4173/',
     'http://localhost:4173/',
 ];
+
 export const colors = {
     reset: '\x1b[0m',
     black: '\x1b[30m',

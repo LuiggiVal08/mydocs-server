@@ -1,42 +1,33 @@
 import jwt from '@/helpers/jwt';
-import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest, JwtPayloadUserReq } from '@/types/auth';
-import jsonwebtoken from 'jsonwebtoken';
+import type { Response, NextFunction, Request } from 'express';
+import type {} from /* AuthenticatedRequest, */ /* JwtPayloadUserReq */ '@/types/auth';
+import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
+import { JWT_SECRET, NODE_ENV } from '@/constants';
 
-// Middleware para verificar si el usuario está autenticado
-export const isAuthenticated = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-    const token = req.cookies.authToken || req.headers['authorization'];
+export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const expirationTime = Date.now() + 15 * 60 * 1000; // Expira en 15 minutos
+    const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
+
     if (!token) {
-        console.log({ token });
-        res.status(401).json({ message: 'Authentication token is missing' });
-        return; // Solo coloca `return` para evitar continuar con el código
+        return void res.status(401).json({ message: 'Authentication token is missing' });
     }
 
     try {
-        const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET as string);
+        const decoded = jsonwebtoken.verify(token, JWT_SECRET);
+        const { /* iat, exp, */ ...user } = decoded as JwtPayload;
+        const newToken = await jwt(user, 'access');
 
-        if (typeof decoded !== 'object' || decoded === null) {
-            console.log({ decoded });
-            res.status(401).json({ message: 'Invalid token format' });
-            return;
-        }
-
-        const expirationTime = Date.now() + 15 * 60 * 1000; // Expira en 15 minutos
-        const { iat, exp, ...user } = decoded as JwtPayloadUserReq;
-
-        req.user = { iat, exp, ...user };
-        req.tokenExpiration = expirationTime;
-
-        const newToken = await jwt({
-            userId: req.user.userId,
-            roleId: req.user.roleId,
-        });
+        // req.user = { iat, exp, ...user };
+        // req.tokenExpiration = expirationTime;
 
         res.cookie('authToken', newToken, {
             httpOnly: true,
             expires: new Date(expirationTime),
+            secure: NODE_ENV === 'production',
+            sameSite: 'strict',
         });
 
+        res.setHeader('Authorization', `Bearer ${newToken}`);
         next();
     } catch (err) {
         res.status(401).json({ message: 'Invalid or expired token' + err });

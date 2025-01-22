@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import z from 'zod';
-import logger from '@/config/logger';
 
 import models from '@/app/models';
+import handdleErrorsController from '@/helpers/handdleErrorsController';
 
 const MunicipalitySchema = z.object({
     name: z.string().min(3),
@@ -10,19 +10,18 @@ const MunicipalitySchema = z.object({
 });
 
 class Municipality {
-    static async getAll(_req: Request, res: Response) {
+    static async getAll(req: Request, res: Response) {
         try {
             const municipality = await models.Municipality.findAll();
             res.status(200).json({ data: { municipality } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 
     static async getById(req: Request, res: Response) {
+        const { id } = req.params;
         try {
-            const { id } = req.params;
             const municipality = await models.Municipality.findByPk(id);
             if (!municipality) {
                 res.status(404).json({ message: 'municipio no encontrado' });
@@ -30,8 +29,7 @@ class Municipality {
             }
             res.status(200).json({ data: { municipality } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 
@@ -46,8 +44,7 @@ class Municipality {
             const municipality = await models.Municipality.create(body);
             res.status(201).json({ data: { municipality } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 
@@ -68,8 +65,7 @@ class Municipality {
             const municipality = await models.Municipality.update({ ...body }, { where: { id } });
             res.status(200).json({ data: municipality });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 
@@ -84,8 +80,7 @@ class Municipality {
             await models.Municipality.destroy({ where: { id } });
             res.status(200).json({ message: 'Estado eliminado' });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
 }

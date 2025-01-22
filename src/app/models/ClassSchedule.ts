@@ -1,9 +1,30 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import Classroom from './Classroom';
-import CoursePeriod from './CoursePeriod';
+import Classroom, { ClassroomAttributes } from './Classroom';
+import CoursePeriod, { CoursePeriodAttributes } from './CoursePeriod';
 
-@Table({ tableName: 'class_schedule' })
-class ClassSchedule extends Model<ClassSchedule> {
+// Interface for ClassSchedule attributes
+interface ClassScheduleAttributes {
+    id: string;
+    classroomId: string;
+    courseId: string;
+    type: string;
+    weekDay: string;
+    startTime: string;
+    endTime: string;
+    classroom: ClassroomAttributes;
+    coursePeriod: CoursePeriodAttributes;
+}
+
+// Interface for ClassSchedule creation attributes
+interface ClassScheduleCreationAttributes extends Omit<ClassScheduleAttributes, 'id' | 'classroom' | 'coursePeriod'> {}
+
+// Exporting the interfaces
+export { ClassScheduleAttributes, ClassScheduleCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'class_schedule',
+})
+class ClassSchedule extends Model<ClassScheduleAttributes, ClassScheduleCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)

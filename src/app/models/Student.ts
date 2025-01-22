@@ -9,12 +9,34 @@ import {
     BelongsTo,
     HasMany,
 } from 'sequelize-typescript';
-import User from './User';
-import Enrollment from './Enrollment';
-import Withdrawal from './Withdrawal';
-import Graduate from './Graduate';
+import User, { UserAttributes } from './User';
+import Enrollment, { EnrollmentAttributes } from './Enrollment';
+import Withdrawal, { WithdrawalAttributes } from './Withdrawal';
+import Graduate, { GraduateAttributes } from './Graduate';
+import Attendance from './Attendance';
 
-@Table({ tableName: 'student' })
+interface StudentAttributes {
+    id: string;
+    userId: string;
+    active: boolean;
+    user: UserAttributes;
+    enrollments: EnrollmentAttributes[];
+    attendances: Attendance[];
+    withdrawals: WithdrawalAttributes[];
+    graduates: GraduateAttributes[];
+}
+
+interface StudentCreationAttributes
+    extends Omit<
+        StudentAttributes,
+        'id' | 'active' | 'user' | 'enrollments' | 'withdrawals' | 'graduates' | 'attendances'
+    > {}
+
+export { StudentAttributes, StudentCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'student',
+})
 class Student extends Model<Student> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
@@ -29,16 +51,19 @@ class Student extends Model<Student> {
     @Column(DataType.BOOLEAN)
     declare active: boolean;
 
-    @BelongsTo(() => User)
+    @BelongsTo(() => User, { onDelete: 'SET NULL' })
     user: User;
 
-    @HasMany(() => Enrollment)
+    @HasMany(() => Enrollment, { onDelete: 'CASCADE' })
     enrollments: Enrollment[];
 
-    @HasMany(() => Withdrawal)
+    @HasMany(() => Attendance, { onDelete: 'CASCADE' })
+    attendances: Attendance[];
+
+    @HasMany(() => Withdrawal, { onDelete: 'CASCADE' })
     withdrawals: Withdrawal[];
 
-    @HasMany(() => Graduate)
+    @HasMany(() => Graduate, { onDelete: 'CASCADE' })
     graduates: Graduate[];
 }
 export default Student;

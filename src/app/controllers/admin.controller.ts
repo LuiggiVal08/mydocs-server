@@ -1,37 +1,36 @@
-import logger from '@/config/logger';
 import models from '@/app/models';
-import { AuthenticatedRequest } from '@/types/auth';
-import { Request, Response } from 'express';
+import handdleErrorsController from '@/helpers/handdleErrorsController';
+import type { AuthenticatedRequest } from '@/types/auth';
+import type { Request, Response } from 'express';
 import { z } from 'zod';
 
 const AdminSchema = z.object({
-    usuarioId: z.string(),
-    rolId: z.string(),
+    userId: z.string(),
+    roleId: z.string(),
+    status: z.enum(['Activo', 'Inactivo']).optional(),
 });
 
 class Admin {
-    static async getAll(_req: AuthenticatedRequest, res: Response) {
+    static async getAll(req: AuthenticatedRequest, res: Response) {
         try {
             const admins = await models.Administrator.findAll({ include: [{ all: true }] });
-
             res.status(200).json({ data: { admins } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
-    static async getAllTeachers(_req: Request, res: Response) {
+
+    static async getAllTeachers(req: Request, res: Response) {
         try {
             const teachers = await models.Administrator.findAll({
-                where: { role: { name: 'teacher' } },
-                include: [{ all: true }],
+                include: [{ model: models.Role, where: { name: 'teacher' } }],
             });
             res.status(200).json({ data: { teachers } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
+
     static async getById(req: Request, res: Response) {
         try {
             const { id } = req.params;
@@ -44,10 +43,10 @@ class Admin {
             }
             res.status(200).json({ data: { admin } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
         }
     }
+
     static async create(req: Request, res: Response) {
         try {
             const { body } = req;
@@ -56,26 +55,64 @@ class Admin {
                 res.status(400).json({ message: parsed.error.message });
                 return;
             }
-            const usuarioId = parsed.data.usuarioId;
-            const usuario = await models.User.findByPk(usuarioId);
-            if (!usuario) {
+            const { userId } = parsed.data;
+            const user = await models.User.findByPk(userId);
+            if (!user) {
                 res.status(404).json({ message: 'Usuario no encontrado' });
                 return;
             }
-            const rolId = parsed.data.rolId;
-            const rol = await models.Role.findByPk(rolId);
-            if (!rol) {
+            const { roleId } = parsed.data;
+            const role = await models.Role.findByPk(roleId);
+            if (!role) {
                 res.status(404).json({ message: 'Rol no encontrado' });
                 return;
             }
             const admin = await models.Administrator.create({
-                roleId: rolId,
-                userId: usuarioId,
+                roleId: roleId,
+                userId: userId,
             });
+
             res.status(201).json({ data: { admin } });
         } catch (error) {
-            logger.error(error);
-            res.status(400).end();
+            return handdleErrorsController(error, res, req);
+        }
+    }
+    static async update(req: Request, res: Response) {
+        try {
+            const { body } = req;
+            const { id } = req.params;
+            const admin = await models.Administrator.findByPk(id);
+            if (!admin) {
+                res.status(404).json({ message: 'Administrator no encontrado' });
+                return;
+            }
+            const parsed = AdminSchema.safeParse(body);
+            if (!parsed.success) {
+                res.status(400).json({ message: parsed.error.message, error: parsed.error.format() });
+                return;
+            }
+            const updateAdministrator = {
+                ...admin.dataValues,
+                ...parsed.data,
+            };
+            await admin.update(updateAdministrator);
+            res.status(200).json({ data: { admin } });
+        } catch (error) {
+            return handdleErrorsController(error, res, req);
+        }
+    }
+
+    static async delete(req: Request, res: Response): Promise<void> {
+        const { id } = req.params;
+        try {
+            const admin = await models.Administrator.findByPk(id);
+            if (!admin) {
+                return void res.status(404).json({ message: 'Administrator no encontrado' });
+            }
+            await admin.destroy();
+            res.status(200).json({ message: 'Administrador eliminado' });
+        } catch (error) {
+            return handdleErrorsController(error, res, req);
         }
     }
 }

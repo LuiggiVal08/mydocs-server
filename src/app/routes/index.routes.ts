@@ -1,17 +1,31 @@
-import express, { Request, Response } from 'express';
+import express, { type Request, type Response } from 'express';
 import userRoutes from './user.routes';
 import stateRoutes from './state.routes';
 import municipalityRoutes from './municipality.routes';
+import coreRoutes from './core.routes';
+import buildingRoutes from './buildings.routes';
+import pnfRoutes from './pnf.routes';
+import studentRoutes from './student.routes';
+import adminRoutes from './admin.routes';
+import extensionRoutes from './extension.routes';
+import documentRoutes from './document.routes';
 
 const router = express.Router();
+
+router.use('/admin', adminRoutes);
+router.use('/building', buildingRoutes);
+router.use('/core', coreRoutes);
+router.use('/document', documentRoutes);
+router.use('/extension', extensionRoutes);
+router.use('/municipality', municipalityRoutes);
+router.use('/student', studentRoutes);
+router.use('/state', stateRoutes);
+router.use('/user', userRoutes);
+router.use('/pnf', pnfRoutes);
 
 router.use('/ping/', (_req, res) => {
     res.status(200).json({ ping: 'pong' });
 });
-router.use('/user', userRoutes);
-router.use('/state', stateRoutes);
-router.use('/municipality', municipalityRoutes);
-
 router.get('/health', (_req, res) => {
     res.status(200).send('OK');
 });
