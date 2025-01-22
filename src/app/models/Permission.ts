@@ -1,8 +1,20 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, HasMany } from 'sequelize-typescript';
-import PermissionRole from './PermissionRole';
+import PermissionRole, { PermissionRoleAttributes } from './PermissionRole';
 
-@Table({ tableName: 'permissions' })
-class Permission extends Model<Permission> {
+interface PermissionAttributes {
+    id: string;
+    name: string;
+    permissionRoles: PermissionRoleAttributes[];
+}
+
+interface PermissionCreationAttributes extends Omit<PermissionAttributes, 'id' | 'permissionRoles'> {}
+
+export { PermissionAttributes, PermissionCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'permissions',
+})
+class Permission extends Model<PermissionAttributes, PermissionCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -11,7 +23,7 @@ class Permission extends Model<Permission> {
     @Column(DataType.STRING(100))
     declare name: string;
 
-    @HasMany(() => PermissionRole)
+    @HasMany(() => PermissionRole, { onDelete: 'SET NULL' })
     permissionRoles: PermissionRole[];
 }
 export default Permission;

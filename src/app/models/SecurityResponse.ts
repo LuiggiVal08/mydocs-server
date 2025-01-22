@@ -1,9 +1,24 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import User from './User';
-import SecurityQuestion from './SecurityQuestion';
+import User, { UserAttributes } from './User';
+import SecurityQuestion, { SecurityQuestionAttributes } from './SecurityQuestion';
 
-@Table({ tableName: 'security_response' })
-class SecurityResponse extends Model<SecurityResponse> {
+interface SecurityResponseAttributes {
+    id: string;
+    userId: string;
+    questionId: string;
+    response: string;
+    user: UserAttributes;
+    question: SecurityQuestionAttributes;
+}
+
+interface SecurityResponseCreationAttributes extends Omit<SecurityResponseAttributes, 'id' | 'user' | 'question'> {}
+
+export { SecurityResponseAttributes, SecurityResponseCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'security_response',
+})
+class SecurityResponse extends Model<SecurityResponseAttributes, SecurityResponseCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -27,4 +42,3 @@ class SecurityResponse extends Model<SecurityResponse> {
     question: SecurityQuestion;
 }
 export default SecurityResponse;
-    

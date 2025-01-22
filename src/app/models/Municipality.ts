@@ -11,18 +11,23 @@ import {
     AllowNull,
     IsUUID,
 } from 'sequelize-typescript';
-import { Optional } from 'sequelize';
-import State from './State';
-import User from './User';
+
+import State, { StateAttributes } from './State';
+import User, { UserAttributes } from './User';
 
 interface MunicipalityAttributes {
     id: string;
     stateId: string;
     name: string;
+    state: StateAttributes;
+    users: UserAttributes[];
 }
-interface MunicipalityCreationAttributes extends Optional<MunicipalityAttributes, 'id'> {}
-
-@Table({ tableName: 'municipality' })
+interface MunicipalityCreationAttributes extends Omit<MunicipalityAttributes, 'id' | 'state' | 'users'> {}
+export { MunicipalityAttributes, MunicipalityCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'municipality',
+})
 class Municipality extends Model<MunicipalityAttributes, MunicipalityCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
@@ -42,7 +47,7 @@ class Municipality extends Model<MunicipalityAttributes, MunicipalityCreationAtt
     @BelongsTo(() => State)
     state: State;
 
-    @HasMany(() => User)
+    @HasMany(() => User, { onDelete: 'SET NULL' })
     users: User[];
 }
 

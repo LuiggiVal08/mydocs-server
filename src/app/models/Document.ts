@@ -1,7 +1,19 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default } from 'sequelize-typescript';
 
-@Table({ tableName: 'document' })
-class Document extends Model<Document> {
+interface DocumentAttributes {
+    id: string;
+    name: string;
+    description: string;
+}
+
+interface DocumentCreationAttributes extends Omit<DocumentAttributes, 'id'> {}
+
+export { DocumentAttributes, DocumentCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'document',
+})
+class Document extends Model<DocumentAttributes, DocumentCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)

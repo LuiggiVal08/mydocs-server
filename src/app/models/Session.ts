@@ -1,8 +1,25 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import User from './User';
+import User, { UserAttributes } from './User';
 
-@Table({ tableName: 'session' })
-class Session extends Model<Session> {
+interface SessionAttributes {
+    id: string;
+    userId: string;
+    device: string;
+    ip: string;
+    start: Date;
+    end: Date;
+    status: boolean;
+    user: UserAttributes;
+}
+
+interface SessionCreationAttributes extends Omit<SessionAttributes, 'id' | 'end' | 'status' | 'user'> {}
+
+export { SessionAttributes, SessionCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'session',
+})
+class Session extends Model<SessionAttributes, SessionCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -26,7 +43,7 @@ class Session extends Model<Session> {
 
     @Default(true)
     @Column(DataType.BOOLEAN)
-    declare state: boolean;
+    declare status: boolean;
 
     @BelongsTo(() => User)
     user: User;

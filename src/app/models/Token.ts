@@ -1,8 +1,23 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import User from './User';
+import User, { UserAttributes } from './User';
 
-@Table({ tableName: 'token' })
-class Token extends Model<Token> {
+interface TokenAttributes {
+    id: string;
+    userId: string;
+    token: string;
+    used: boolean;
+    expiration: Date;
+    user: UserAttributes;
+}
+
+interface TokenCreationAttributes extends Omit<TokenAttributes, 'id' | 'used' | 'user'> {}
+
+export { TokenAttributes, TokenCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'token',
+})
+class Token extends Model<TokenAttributes, TokenCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)

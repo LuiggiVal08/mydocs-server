@@ -1,8 +1,20 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, HasMany } from 'sequelize-typescript';
-import Municipality from './Municipality';
+import Municipality, { MunicipalityAttributes } from './Municipality';
 
-@Table({ tableName: 'state' })
-class State extends Model<State> {
+interface StateAttributes {
+    id: string;
+    name: string;
+    municipalities: MunicipalityAttributes[];
+}
+
+interface StateCreationAttributes extends Omit<StateAttributes, 'id' | 'municipalities'> {}
+
+export { StateAttributes, StateCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'state',
+})
+class State extends Model<StateAttributes, StateCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
@@ -11,7 +23,8 @@ class State extends Model<State> {
     @Column(DataType.STRING)
     declare name: string;
 
-    @HasMany(() => Municipality)
+    @HasMany(() => Municipality, { onDelete: 'CASCADE' })
     municipalities: Municipality[];
 }
+
 export default State;

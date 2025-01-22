@@ -1,10 +1,30 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import Student from './Student';
-import CoursePeriod from './CoursePeriod';
-import Administrator from './Administrator';
+import Student, { StudentAttributes } from './Student';
+import CoursePeriod, { CoursePeriodAttributes } from './CoursePeriod';
+import Administrator, { AdministratorAttributes } from './Administrator';
 
-@Table({ tableName: 'enrollment' })
-class Enrollment extends Model<Enrollment> {
+interface EnrollmentAttributes {
+    id: string;
+    studentId: string;
+    coursePeriodId: string;
+    administratorId: string;
+    registrationDate: Date;
+    status: string;
+    observations: string;
+    student: StudentAttributes;
+    coursePeriod: CoursePeriodAttributes;
+    administrator: AdministratorAttributes;
+}
+
+interface EnrollmentCreationAttributes
+    extends Omit<EnrollmentAttributes, 'id' | 'student' | 'coursePeriod' | 'administrator'> {}
+
+export { EnrollmentAttributes, EnrollmentCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'enrollment',
+})
+class Enrollment extends Model<EnrollmentAttributes, EnrollmentCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)

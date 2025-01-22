@@ -1,9 +1,23 @@
 import { Column, Model, PrimaryKey, Table, DataType, Default, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import Role from './Role';
-import Permission from './Permission';
+import Role, { RoleAttributes } from './Role';
+import Permission, { PermissionAttributes } from './Permission';
 
-@Table({ tableName: 'permission_role' })
-class PermissionRole extends Model<PermissionRole> {
+interface PermissionRoleAttributes {
+    id: string;
+    roleId: string;
+    permissionId: string;
+    role: RoleAttributes;
+    permission: PermissionAttributes;
+}
+
+interface PermissionRoleCreationAttributes extends Omit<PermissionRoleAttributes, 'id' | 'role' | 'permission'> {}
+
+export { PermissionRoleAttributes, PermissionRoleCreationAttributes };
+@Table({
+    timestamps: true,
+    tableName: 'permission_role',
+})
+class PermissionRole extends Model<PermissionRoleAttributes, PermissionRoleCreationAttributes> {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
