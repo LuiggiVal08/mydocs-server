@@ -58,7 +58,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
     @Column(DataType.UUID)
     declare id: string;
 
-    @AllowNull(false)
+    @AllowNull(true)
     @ForeignKey(() => Municipality)
     @Column(DataType.UUID)
     declare municipalityId: string;
