@@ -22,14 +22,7 @@ beforeAll(async () => {
 beforeEach(async () => {
     await models.Municipality?.destroy({ truncate: true, cascade: true });
     for (const municipality of MUNICIPALITIES) {
-        let { body } = await api.get('/api/state');
-        const states = body?.data.states;
-        let state;
-        if (states.length > 0) {
-            state = states[0];
-        } else {
-            state = await models.State.create({ name: 'Estado 1' });
-        }
+        const state = await models.State.create({ name: 'Estado 1' });
         await models.Municipality?.create({ name: municipality?.name, stateId: state.id });
     }
 });
