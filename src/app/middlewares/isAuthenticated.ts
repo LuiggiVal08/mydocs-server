@@ -14,7 +14,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
 
     try {
         const decoded = jsonwebtoken.verify(token, JWT_SECRET);
-        const { iat, exp, ...user } = decoded as JwtPayload;
+        const { /* iat, exp, */ ...user } = decoded as JwtPayload;
         const newToken = await jwt(user, 'access');
 
         // req.user = { iat, exp, ...user };
