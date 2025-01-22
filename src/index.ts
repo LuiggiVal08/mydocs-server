@@ -11,7 +11,7 @@ sequelize
         await sequelize.sync({ alter: true });
         logger.info('Connection has been established successfully.');
 
-        httpServer.listen(PORT_SERVER, () => {
+        httpServer.listen(PORT_SERVER, async () => {
             logger.info(`Server running on port ${PORT_SERVER}`);
         });
     })
