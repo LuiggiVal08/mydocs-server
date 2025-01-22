@@ -9,7 +9,8 @@
         "dev": "cross-env NODE_ENV=develoment ts-node-dev -r tsconfig-paths/register ./src/index.ts",
         "test": "cross-env NODE_ENV=test jest --silent  --runInBand",
         "test:endpoints": "npm run test -- --testPathPattern=tests/endpoints",
-        "lint": "eslint ./src",
+        "test:helpers": "npm run test -- --testPathPattern=tests/helpers ",
+        "lint": "eslint ./src --fix",
         "build": "tsc -p tsconfig.build.json && tsc-alias --verbose",
         "buildAndGenerateClient": "npm run prisma:generate-client && tsc && tsc-alias --verbose",
         "prisma:generate-client": "prisma generate --schema=prisma/test/schema.prisma && prisma generate --schema=prisma/development/schema.prisma && prisma generate --schema=prisma/production/schema.prisma"
@@ -19,6 +20,7 @@
     "license": "ISC",
     "description": "Endpoint Mydocs",
     "dependencies": {
+        "@types/multer": "^1.4.12",
         "bcryptjs": "2.4.3",
         "cls-hooked": "^4.2.2",
         "connect-history-api-fallback": "2.0.0",
@@ -31,6 +33,7 @@
         "helmet": "8.0.0",
         "jsonwebtoken": "9.0.2",
         "morgan": "1.10.0",
+        "multer": "^1.4.5-lts.1",
         "mysql2": "3.11.3",
         "nodemailer": "6.9.15",
         "sequelize": "^6.37.5",
