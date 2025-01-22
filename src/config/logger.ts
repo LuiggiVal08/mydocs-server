@@ -6,16 +6,13 @@ const { combine, timestamp, printf, colorize } = winston.format;
 /**
  * Custom log format for Winston logger.
  */
-const logFormat = printf(({ level, message, timestamp }) => {
-    return `\n[${level}]: ${timestamp} | ${message}`;
-});
+const logFormat = printf(({ level, message, timestamp }) => `\n[${level}]: ${timestamp} | ${message}`);
 
 /**
  * Creates and configures a Winston logger instance.
  * @returns {winston.Logger} Configured Winston logger instance.
  */
-const createLogger = (): winston.Logger => {
-    return winston.createLogger({
+const createLogger = (): winston.Logger => winston.createLogger({
         level: 'info',
         format: combine(
             colorize(), // Colorize logs in the console
@@ -42,7 +39,6 @@ const createLogger = (): winston.Logger => {
             new winston.transports.File({ filename: 'logs/rejections.log' }), // Handle unhandled promise rejections
         ],
     });
-};
 
 const logger = createLogger();
 
