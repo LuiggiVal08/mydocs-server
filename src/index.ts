@@ -1,10 +1,12 @@
-import { httpServer } from '@/app/app';
-import { PORT } from '@/constants';
 import logger from '@/config/logger';
+import { PORT } from '@/constants';
+logger.info('logger is working');
+import { httpServer } from '@/app/app';
+logger.info('httpServer is working');
 import sequelize from './config/sequelize';
-
+logger.info('sequelize is working');
 const PORT_SERVER: number = parseInt(PORT || '3000', 10);
-
+logger.info('Starting server...');
 sequelize
     .authenticate()
     .then(async () => {
