@@ -26,7 +26,7 @@ module.exports = [
             reportUnusedDisableDirectives: 'warn',
         },
         rules: {
-            // 'no-console': 'warn', // Advertir sobre el uso de console.log
+            'no-console': 'warn', // Advertir sobre el uso de console.log
             'prefer-const': 'warn', // Sugerir el uso de const cuando sea posible
             'no-var': 'error', // No permitir el uso de var
             semi: ['warn', 'always'], // Advertir si falta el punto y coma

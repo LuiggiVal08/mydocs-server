@@ -1,14 +1,13 @@
-console.log('Hello World!');
 import logger from '@/config/logger';
-console.log('Hello World!2');
+
 import { PORT } from '@/constants';
-console.log('Hello World!3');
+
 import { httpServer } from '@/app/app';
-console.log('Hello World!4');
+
 import sequelize from './config/sequelize';
-logger.info('sequelize is working');
+
 const PORT_SERVER: number = parseInt(PORT || '3000', 10);
-logger.info('Starting server...');
+
 sequelize
     .authenticate()
     .then(async () => {
