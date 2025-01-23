@@ -7,13 +7,11 @@
     "scripts": {
         "start": "cross-env NODE_ENV=production node ./dist/index.js",
         "dev": "cross-env NODE_ENV=develoment ts-node-dev -r tsconfig-paths/register ./src/index.ts",
+        "build": "tsc -p tsconfig.build.json && tsc-alias --verbose",
+        "lint": "eslint ./src --fix",
         "test": "cross-env NODE_ENV=test jest --silent  --runInBand",
         "test:endpoints": "npm run test -- --testPathPattern=tests/endpoints",
-        "test:helpers": "npm run test -- --testPathPattern=tests/helpers ",
-        "lint": "eslint ./src --fix",
-        "build": "tsc -p tsconfig.build.json && tsc-alias --verbose",
-        "buildAndGenerateClient": "npm run prisma:generate-client && tsc && tsc-alias --verbose",
-        "prisma:generate-client": "prisma generate --schema=prisma/test/schema.prisma && prisma generate --schema=prisma/development/schema.prisma && prisma generate --schema=prisma/production/schema.prisma"
+        "test:helpers": "npm run test -- --testPathPattern=tests/helpers "
     },
     "keywords": [],
     "author": "Luis Valencia",
