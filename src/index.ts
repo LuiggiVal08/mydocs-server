@@ -1,5 +1,6 @@
 console.log('Hello World!');
 import logger from '@/config/logger';
+console.log('Hello World!2');
 import { PORT } from '@/constants';
 logger.info('logger is working');
 import { httpServer } from '@/app/app';
