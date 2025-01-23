@@ -11,7 +11,7 @@ const PORT_SERVER: number = parseInt(PORT || '3000', 10);
 sequelize
     .authenticate()
     .then(async () => {
-        await sequelize.sync({ alter: true });
+        await sequelize.sync();
         logger.info('Connection has been established successfully.');
 
         httpServer.listen(PORT_SERVER, async () => {
