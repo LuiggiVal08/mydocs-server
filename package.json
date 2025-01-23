@@ -5,7 +5,7 @@
     "icon": "./public/favicon.ico",
     "type": "commonjs",
     "scripts": {
-        "start": "cross-env NODE_ENV=production node ./dist/index.js",
+        "start": "cross-env NODE_ENV=production node  ./dist/index.js --omit=dev",
         "dev": "cross-env NODE_ENV=develoment ts-node-dev -r tsconfig-paths/register ./src/index.ts",
         "build": "tsc -p tsconfig.build.json && tsc-alias --verbose",
         "lint": "eslint ./src --fix",
