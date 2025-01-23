@@ -23,9 +23,6 @@ router.use('/state', stateRoutes);
 router.use('/user', userRoutes);
 router.use('/pnf', pnfRoutes);
 
-router.use('/ping/', (_req, res) => {
-    res.status(200).json({ ping: 'pong' });
-});
 router.get('/health', (_req, res) => {
     res.status(200).send('OK');
 });
