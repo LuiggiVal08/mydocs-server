@@ -12,32 +12,24 @@ const FileCabinetSchema = z.object({
 class FileCabinet {
     static async getAll(req: Request, res: Response) {
         try {
-            // Obtener los parámetros de la consulta (limit y page)
             const { page = 1, limit = 10 } = req.query;
-
-            // Convertir a números (asegurarnos de que sea un valor válido)
             const pageNumber = parseInt(page as string, 10);
             const limitNumber = parseInt(limit as string, 10);
-
-            // Calcular el offset (el punto de inicio para la consulta)
             const offset = (pageNumber - 1) * limitNumber;
-
-            // Obtener los niveles con paginación
             const { count, rows } = await models.FileCabinet.findAndCountAll({ limit: limitNumber, offset: offset });
 
-            // Calcular el número total de páginas
             const totalPages = Math.ceil(count / limitNumber);
 
             res.status(200).json({
                 status: 'success',
                 data: {
-                    fileCabinets: rows, // Los niveles obtenidos
-                },
-                pagination: {
-                    currentPage: pageNumber, // Página actual
-                    totalPages: totalPages, // Total de páginas
-                    totalItems: count, // Total de elementos
-                    itemsPerPage: limitNumber, // Elementos por página
+                    fileCabinets: rows,
+                    pagination: {
+                        currentPage: pageNumber,
+                        totalPages: totalPages,
+                        totalItems: count,
+                        itemsPerPage: limitNumber,
+                    },
                 },
             });
         } catch (error) {

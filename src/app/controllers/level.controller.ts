@@ -42,12 +42,12 @@ class Level {
                 status: 'success',
                 data: {
                     levels: rows, // Los niveles obtenidos
-                },
-                pagination: {
-                    currentPage: pageNumber, // Página actual
-                    totalPages: totalPages, // Total de páginas
-                    totalItems: count, // Total de elementos
-                    itemsPerPage: limitNumber, // Elementos por página
+                    pagination: {
+                        currentPage: pageNumber, // Página actual
+                        totalPages: totalPages, // Total de páginas
+                        totalItems: count, // Total de elementos
+                        itemsPerPage: limitNumber, // Elementos por página
+                    },
                 },
             });
         } catch (error) {

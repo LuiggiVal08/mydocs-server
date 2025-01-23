@@ -13,19 +13,24 @@ const AdminSchema = z.object({
 class Admin {
     static async getAll(req: AuthenticatedRequest, res: Response) {
         try {
-            const admins = await models.Administrator.findAll({ include: [{ all: true }] });
-            res.status(200).json({ data: { admins } });
-        } catch (error) {
-            return handdleErrorsController(error, res, req);
-        }
-    }
+            const { page = 1, limit = 10 } = req.query;
+            const pageNumber = parseInt(page as string, 10);
+            const limitNumber = parseInt(limit as string, 10);
+            const offset = (pageNumber - 1) * limitNumber;
+            const { count, rows } = await models.Administrator.findAndCountAll({ limit: limitNumber, offset: offset });
+            const totalPages = Math.ceil(count / limitNumber);
 
-    static async getAllTeachers(req: Request, res: Response) {
-        try {
-            const teachers = await models.Administrator.findAll({
-                include: [{ model: models.Role, where: { name: 'teacher' } }],
+            res.status(200).json({
+                data: {
+                    admins: rows,
+                    pagination: {
+                        currentPage: pageNumber,
+                        totalPages: totalPages,
+                        totalItems: count,
+                        itemsPerPage: limitNumber,
+                    },
+                },
             });
-            res.status(200).json({ data: { teachers } });
         } catch (error) {
             return handdleErrorsController(error, res, req);
         }
