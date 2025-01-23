@@ -1,3 +1,4 @@
+console.log('Hello World!');
 import logger from '@/config/logger';
 import { PORT } from '@/constants';
 logger.info('logger is working');
