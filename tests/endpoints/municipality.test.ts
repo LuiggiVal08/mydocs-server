@@ -36,10 +36,12 @@ describe('Municipality API', () => {
                 .expect('Content-Type', /application\/json/);
         });
 
-        it('should return two municipalities', async () => {
+        it('returns the correct number of municipalities', async () => {
             const response = await api.get('/api/municipality');
             const { body } = response;
-            expect(body?.data.municipality).toHaveLength(MUNICIPALITIES.length);
+            const { municipality, pagination } = body.data;
+            expect(municipality).toHaveLength(MUNICIPALITIES.length);
+            expect(pagination.totalItems).toBe(MUNICIPALITIES.length);
         });
     });
 

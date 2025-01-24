@@ -53,8 +53,9 @@ describe('GET /api/pnf', () => {
 
     it('returns the correct number of PNFs', async () => {
         const response = await api.get('/api/pnf');
-        const { pnfs } = response.body.data;
+        const { pnfs, pagination } = response.body.data;
         expect(pnfs).toHaveLength(initialPnfs.length);
+        expect(pagination.totalItems).toBe(initialPnfs.length);
     });
 });
 

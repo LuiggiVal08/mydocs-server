@@ -48,11 +48,12 @@ describe('GET /api/level', () => {
             .expect('Content-Type', /application\/json/);
     });
 
-    it('there are two file cabinets', async () => {
+    it('returns the correct number of levels', async () => {
         const response = await api.get('/api/level');
         const { body } = response;
-        const { levels } = body.data;
+        const { levels, pagination } = body.data;
         expect(levels).toHaveLength(initialLevels.length);
+        expect(pagination.totalItems).toBe(initialLevels.length);
     });
 });
 

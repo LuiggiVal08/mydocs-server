@@ -51,8 +51,9 @@ describe('GET /api/building', () => {
 
     it('returns the correct number of buildings', async () => {
         const response = await api.get('/api/building');
-        const { buildings } = response.body.data;
+        const { buildings, pagination } = response.body.data;
         expect(buildings).toHaveLength(initialBuildings.length);
+        expect(pagination.totalItems).toBe(initialBuildings.length);
     });
 });
 

@@ -69,8 +69,9 @@ describe('GET /api/user', () => {
 
     it('returns the correct number of users', async () => {
         const response = await api.get('/api/user');
-        const { data } = response.body;
-        expect(data.users).toHaveLength(initialUsers.length);
+        const { users, pagination } = response.body.data;
+        expect(users).toHaveLength(initialUsers.length);
+        expect(pagination.totalItems).toBe(initialUsers.length);
     });
 });
 

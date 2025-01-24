@@ -34,11 +34,12 @@ describe('GET /api/extension', () => {
             .expect('Content-Type', /application\/json/);
     });
 
-    it('there are two states', async () => {
+    it('returns the correct number of extensions', async () => {
         const response = await api.get('/api/extension');
         const { body } = response;
-        const { extensions } = body.data;
+        const { extensions, pagination } = body.data;
         expect(extensions).toHaveLength(initialExtensions.length);
+        expect(pagination.totalItems).toBe(initialExtensions.length);
     });
 });
 
