@@ -6,8 +6,8 @@ import Administrator, { AdministratorAttributes } from './Administrator';
 interface RoleAttributes {
     id: string;
     name: string;
-    administrators: AdministratorAttributes[];
-    permissionRoles: PermissionRoleAttributes[];
+    administrators?: AdministratorAttributes[];
+    permissionRoles?: PermissionRoleAttributes[];
 }
 
 interface RoleCreationAttributes extends Omit<RoleAttributes, 'id' | 'administrators' | 'permissionRoles'> {}

@@ -6,7 +6,7 @@ interface FileCabinetAttributes {
     name: string;
     status: string;
     location: string;
-    levels: LevelAttributes[];
+    levels?: LevelAttributes[];
 }
 
 interface FileCabinetCreationAttributes extends Omit<FileCabinetAttributes, 'id' | 'levels'> {}

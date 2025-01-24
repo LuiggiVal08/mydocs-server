@@ -18,7 +18,7 @@ interface ChatAttributes {
     participant2Id: string;
     participant1: UserAttributes;
     participant2: UserAttributes;
-    messages: MessageAttributes[];
+    messages?: MessageAttributes[];
 }
 
 interface ChatCreationAttributes extends Omit<ChatAttributes, 'id' | 'participant1' | 'participant2' | 'messages'> {}

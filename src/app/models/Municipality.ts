@@ -20,7 +20,7 @@ interface MunicipalityAttributes {
     stateId: string;
     name: string;
     state: StateAttributes;
-    users: UserAttributes[];
+    users?: UserAttributes[];
 }
 interface MunicipalityCreationAttributes extends Omit<MunicipalityAttributes, 'id' | 'state' | 'users'> {}
 export { MunicipalityAttributes, MunicipalityCreationAttributes };

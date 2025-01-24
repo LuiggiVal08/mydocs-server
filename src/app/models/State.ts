@@ -4,7 +4,7 @@ import Municipality, { MunicipalityAttributes } from './Municipality';
 interface StateAttributes {
     id: string;
     name: string;
-    municipalities: MunicipalityAttributes[];
+    municipalities?: MunicipalityAttributes[];
 }
 
 interface StateCreationAttributes extends Omit<StateAttributes, 'id' | 'municipalities'> {}

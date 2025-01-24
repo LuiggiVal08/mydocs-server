@@ -4,7 +4,7 @@ import PermissionRole, { PermissionRoleAttributes } from './PermissionRole';
 interface PermissionAttributes {
     id: string;
     name: string;
-    permissionRoles: PermissionRoleAttributes[];
+    permissionRoles?: PermissionRoleAttributes[];
 }
 
 interface PermissionCreationAttributes extends Omit<PermissionAttributes, 'id' | 'permissionRoles'> {}

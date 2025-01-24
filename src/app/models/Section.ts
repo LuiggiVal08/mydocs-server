@@ -7,7 +7,7 @@ interface SectionAttributes {
     classroom: string;
     capacity: number;
     status: boolean;
-    coursePeriods: CoursePeriodAttributes[];
+    coursePeriods?: CoursePeriodAttributes[];
 }
 
 interface SectionCreationAttributes extends Omit<SectionAttributes, 'id' | 'coursePeriods'> {}

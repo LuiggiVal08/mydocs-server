@@ -8,8 +8,8 @@ export interface CoreAttributes {
     name: string;
     email: string;
     phone: string;
-    buildings: Building[];
-    pnfs: Pnf[];
+    buildings?: Building[];
+    pnfs?: Pnf[];
 }
 
 // Interface for Core creation attributes

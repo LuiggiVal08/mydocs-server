@@ -1,4 +1,15 @@
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, Unique, Default } from 'sequelize-typescript';
+import {
+    Table,
+    Column,
+    Model,
+    DataType,
+    PrimaryKey,
+    AutoIncrement,
+    Unique,
+    Default,
+    HasMany,
+} from 'sequelize-typescript';
+import RatesChanges from './RatesChanges';
 
 // Interface for Currency attributes
 interface CurrencyAttributes {
@@ -6,6 +17,7 @@ interface CurrencyAttributes {
     name: string;
     symbol: string;
     status: boolean;
+    ratesChanges?: RatesChanges[];
 }
 
 // Interface for Currency creation attributes
@@ -41,5 +53,8 @@ class Currency extends Model<CurrencyAttributes, CurrencyCreationAttributes> {
         allowNull: false,
     })
     status!: boolean;
+
+    @HasMany(() => RatesChanges, { onDelete: 'CASCADE' })
+    ratesChanges: RatesChanges[];
 }
 export default Currency;

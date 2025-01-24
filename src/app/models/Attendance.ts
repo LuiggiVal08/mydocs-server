@@ -9,8 +9,8 @@ interface AttendanceAttributes {
     date: Date;
     status: string;
     observations: string;
-    coursePeriod?: CoursePeriodAttributes;
-    student?: StudentAttributes;
+    coursePeriod: CoursePeriodAttributes;
+    student: StudentAttributes;
 }
 
 interface AttendanceCreationAttributes extends Omit<AttendanceAttributes, 'id' | 'coursePeriod' | 'student'> {}

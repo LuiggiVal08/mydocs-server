@@ -7,8 +7,8 @@ interface RequestTypeAttributes {
     id: string;
     name: string;
     cost: number;
-    requestGraduates: RequestGraduateAttributes[];
-    studentRequests: StudentRequestAttributes[];
+    requestGraduates?: RequestGraduateAttributes[];
+    studentRequests?: StudentRequestAttributes[];
 }
 
 // Interface for the creation attributes of the RequestType entity
