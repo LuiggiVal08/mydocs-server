@@ -7,7 +7,7 @@ interface CourseAcademicAttributes {
     pnfId: string;
     name: string;
     duration: number;
-    curricularUnits: CurricularUnitAttributes[];
+    curricularUnits?: CurricularUnitAttributes[];
 }
 
 interface CourseAcademicCreationAttributes extends Omit<CourseAcademicAttributes, 'id' | 'curricularUnits'> {}

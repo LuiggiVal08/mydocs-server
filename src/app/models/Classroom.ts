@@ -18,7 +18,7 @@ interface ClassroomAttributes {
     name: string;
     type: string;
     building: BuildingAttributes;
-    classSchedules: ClassScheduleAttributes[];
+    classSchedules?: ClassScheduleAttributes[];
 }
 
 interface ClassroomCreationAttributes extends Omit<ClassroomAttributes, 'id' | 'building' | 'classSchedules'> {}

@@ -21,8 +21,8 @@ interface PnfAttributes {
     periodicity: string;
     coreId: string;
     core: CoreAttributes;
-    graduates: GraduateAttributes[];
-    courseAcademic: CourseAcademicAttributes[];
+    graduates?: GraduateAttributes[];
+    courseAcademic?: CourseAcademicAttributes[];
 }
 
 // Interface for Pnf creation attributes

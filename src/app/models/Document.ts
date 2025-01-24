@@ -1,12 +1,14 @@
-import { Column, Model, PrimaryKey, Table, DataType, Default } from 'sequelize-typescript';
+import { Column, Model, PrimaryKey, Table, DataType, Default, HasMany } from 'sequelize-typescript';
+import DocumentExtension from './DocumentExtension';
 
 interface DocumentAttributes {
     id: string;
     name: string;
     description: string;
+    documentExtensions?: DocumentExtension[];
 }
 
-interface DocumentCreationAttributes extends Omit<DocumentAttributes, 'id'> {}
+interface DocumentCreationAttributes extends Omit<DocumentAttributes, 'id' | 'documentExtensions'> {}
 
 export { DocumentAttributes, DocumentCreationAttributes };
 @Table({
@@ -24,5 +26,8 @@ class Document extends Model<DocumentAttributes, DocumentCreationAttributes> {
 
     @Column(DataType.STRING(250))
     declare description: string;
+
+    @HasMany(() => DocumentExtension, { onDelete: 'CASCADE' })
+    documentExtensions: DocumentExtension[];
 }
 export default Document;

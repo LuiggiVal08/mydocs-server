@@ -12,6 +12,7 @@ import {
     IsEmail,
     Unique,
     BeforeCreate,
+    HasOne,
 } from 'sequelize-typescript';
 import Municipality, { MunicipalityAttributes } from './Municipality';
 import Token, { TokenAttributes } from './Token';
@@ -19,6 +20,8 @@ import Chat, { ChatAttributes } from './Chat';
 import Notification, { NotificationAttributes } from './Notification';
 import Session, { SessionAttributes } from './Session';
 import { hashPassword } from '@/helpers/crypto';
+import Student from './Student';
+import Administrator from './Administrator';
 
 interface UserAttributes {
     id: string;
@@ -35,16 +38,26 @@ interface UserAttributes {
     dateOfBirth: Date;
     avatar: string;
     municipality: MunicipalityAttributes;
-    tokens: TokenAttributes[];
-    chats: ChatAttributes[];
-    notifications: NotificationAttributes[];
-    sessions: SessionAttributes[];
+    student?: Student;
+    administrator?: Administrator;
+    tokens?: TokenAttributes[];
+    chats?: ChatAttributes[];
+    notifications?: NotificationAttributes[];
+    sessions?: SessionAttributes[];
 }
 
 interface UserCreationAttributes
     extends Omit<
         UserAttributes,
-        'id' | 'avatar' | 'tokens' | 'chats' | 'notifications' | 'sessions' | 'municipality'
+        | 'id'
+        | 'avatar'
+        | 'tokens'
+        | 'chats'
+        | 'notifications'
+        | 'sessions'
+        | 'municipality'
+        | 'student'
+        | 'administrator'
     > {}
 
 export { UserAttributes, UserCreationAttributes };
@@ -114,6 +127,12 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
 
     @BelongsTo(() => Municipality, { onDelete: 'SET NULL' })
     municipality: Municipality;
+
+    @HasOne(() => Student, { onDelete: 'CASCADE' })
+    student: Student;
+
+    @HasOne(() => Administrator, { onDelete: 'CASCADE' })
+    administrator: Administrator;
 
     @HasMany(() => Token, { onDelete: 'CASCADE' })
     tokens: Token[];

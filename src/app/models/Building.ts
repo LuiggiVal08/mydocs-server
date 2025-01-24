@@ -17,7 +17,6 @@ interface BuildingAttributes {
     name: string;
     location: string;
     coreId: string;
-
     classrooms?: ClassroomAttributes[];
     core?: CoreAttributes;
 }
