@@ -36,11 +36,12 @@ describe('GET /api/document', () => {
             .expect('Content-Type', /application\/json/);
     });
 
-    it('there are two states', async () => {
+    it('returns the correct number of states', async () => {
         const response = await api.get('/api/document');
         const { body } = response;
-        const { documents } = body.data;
+        const { documents, pagination } = body.data;
         expect(documents).toHaveLength(initialDocuments.length);
+        expect(pagination.totalItems).toBe(initialDocuments.length);
     });
 });
 

@@ -11,8 +11,25 @@ const ExtensionSchema = z.object({
 class Extension {
     static async getAll(req: Request, res: Response) {
         try {
-            const extensions = await models.Extension.findAll();
-            res.status(200).json({ data: { extensions } });
+            const { page = 1, limit = 10 } = req.query;
+            const pageNumber = parseInt(page as string, 10);
+            const limitNumber = parseInt(limit as string, 10);
+            const offset = (pageNumber - 1) * limitNumber;
+            const { count, rows } = await models.Extension.findAndCountAll({ limit: limitNumber, offset: offset });
+
+            const totalPages = Math.ceil(count / limitNumber);
+
+            res.status(200).json({
+                data: {
+                    extensions: rows,
+                    pagination: {
+                        currentPage: pageNumber,
+                        totalPages: totalPages,
+                        totalItems: count,
+                        itemsPerPage: limitNumber,
+                    },
+                },
+            });
         } catch (error) {
             return handdleErrorsController(error, res, req);
         }

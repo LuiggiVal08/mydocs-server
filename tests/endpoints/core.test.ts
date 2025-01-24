@@ -40,8 +40,9 @@ describe('GET /api/core', () => {
 
     it('returns the correct number of cores', async () => {
         const response = await api.get('/api/core');
-        const { cores } = response.body.data;
+        const { cores, pagination } = response.body.data;
         expect(cores).toHaveLength(initialCores.length);
+        expect(pagination.totalItems).toBe(initialCores.length);
     });
 });
 

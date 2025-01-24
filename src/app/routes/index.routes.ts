@@ -1,4 +1,5 @@
 import express, { type Request, type Response } from 'express';
+
 import userRoutes from './user.routes';
 import stateRoutes from './state.routes';
 import municipalityRoutes from './municipality.routes';
@@ -10,6 +11,7 @@ import adminRoutes from './admin.routes';
 import extensionRoutes from './extension.routes';
 import documentRoutes from './document.routes';
 import fileCabinetRoutes from './fileCabinet.routes';
+import levelRoutes from './level.routes';
 
 const router = express.Router();
 
@@ -20,6 +22,7 @@ router.use('/document', documentRoutes);
 router.use('/extension', extensionRoutes);
 router.use('/file-cabinet', fileCabinetRoutes);
 router.use('/municipality', municipalityRoutes);
+router.use('/level', levelRoutes);
 router.use('/student', studentRoutes);
 router.use('/state', stateRoutes);
 router.use('/user', userRoutes);
@@ -32,6 +35,7 @@ router.get('/health', (_req, res) => {
         timestamp: Date.now(), // Hora actual
     });
 });
+
 router.use('*', (_req: Request, res: Response) => {
     res.status(404).json({ message: 'Recurso no encontrado' });
 });

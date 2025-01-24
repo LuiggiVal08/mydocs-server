@@ -12,8 +12,26 @@ const FileCabinetSchema = z.object({
 class FileCabinet {
     static async getAll(req: Request, res: Response) {
         try {
-            const fileCabinets = await models.FileCabinet.findAll();
-            res.status(200).json({ data: { fileCabinets } });
+            const { page = 1, limit = 10 } = req.query;
+            const pageNumber = parseInt(page as string, 10);
+            const limitNumber = parseInt(limit as string, 10);
+            const offset = (pageNumber - 1) * limitNumber;
+            const { count, rows } = await models.FileCabinet.findAndCountAll({ limit: limitNumber, offset: offset });
+
+            const totalPages = Math.ceil(count / limitNumber);
+
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    fileCabinets: rows,
+                    pagination: {
+                        currentPage: pageNumber,
+                        totalPages: totalPages,
+                        totalItems: count,
+                        itemsPerPage: limitNumber,
+                    },
+                },
+            });
         } catch (error) {
             return handdleErrorsController(error, res, req);
         }

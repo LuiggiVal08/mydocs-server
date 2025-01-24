@@ -16,8 +16,23 @@ const schemaBuildingGetId = schemaBuilding.pick({ id: true });
 class Building {
     static async getAll(req: Request, res: Response) {
         try {
-            const buildings = await models.Building.findAll();
-            res.status(200).json({ data: { buildings } });
+            const { page = 1, limit = 10 } = req.query;
+            const pageNumber = parseInt(page as string, 10);
+            const limitNumber = parseInt(limit as string, 10);
+            const offset = (pageNumber - 1) * limitNumber;
+            const { count, rows } = await models.Building.findAndCountAll({ limit: limitNumber, offset: offset });
+            const totalPages = Math.ceil(count / limitNumber);
+            res.status(200).json({
+                data: {
+                    buildings: rows,
+                    pagination: {
+                        currentPage: pageNumber,
+                        totalPages: totalPages,
+                        totalItems: count,
+                        itemsPerPage: limitNumber,
+                    },
+                },
+            });
         } catch (error) {
             return handdleErrorsController(error, res, req);
         }

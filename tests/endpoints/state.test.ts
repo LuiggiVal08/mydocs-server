@@ -33,11 +33,12 @@ describe('GET /api/state', () => {
             .expect('Content-Type', /application\/json/);
     });
 
-    it('there are two states', async () => {
+    it('returns the correct number of states', async () => {
         const response = await api.get('/api/state');
         const { body } = response;
-        const { states } = body.data;
+        const { states, pagination } = body.data;
         expect(states).toHaveLength(initialStates.length);
+        expect(pagination.totalItems).toBe(initialStates.length);
     });
 });
 

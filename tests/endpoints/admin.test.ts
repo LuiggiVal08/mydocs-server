@@ -78,8 +78,13 @@ describe('GET /api/admin', () => {
             .get('/api/admin')
             .expect(200)
             .expect('Content-Type', /application\/json/);
-
         expect(response.body.data.admins).toHaveLength(initialAdmins.length);
+    });
+    it('returns the correct number of admins', async () => {
+        const response = await api.get('/api/admin');
+        const { admins, pagination } = response.body.data;
+        expect(admins).toHaveLength(initialAdmins.length);
+        expect(pagination.totalItems).toBe(initialAdmins.length);
     });
 });
 

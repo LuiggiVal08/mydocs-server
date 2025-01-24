@@ -38,16 +38,17 @@ describe('GET /api/file-cabinet', () => {
             .expect('Content-Type', /application\/json/);
     });
 
-    it('there are two file cabinets', async () => {
+    it('returns the correct number of cabinets', async () => {
         const response = await api.get('/api/file-cabinet');
         const { body } = response;
-        const { fileCabinets } = body.data;
+        const { fileCabinets, pagination } = body.data;
         expect(fileCabinets).toHaveLength(initialFileCabinets.length);
+        expect(pagination.totalItems).toBe(initialFileCabinets.length);
     });
 });
 
 describe('GET /api/file-cabinet/:id', () => {
-    it('state is return as json', async () => {
+    it('cabinet is return as json', async () => {
         const fileCabinet = await models.FileCabinet.findOne();
         await api
             .get(`/api/file-cabinet/${fileCabinet?.id}`)
@@ -55,7 +56,7 @@ describe('GET /api/file-cabinet/:id', () => {
             .expect('Content-Type', /application\/json/);
     });
 
-    it('state not found', async () => {
+    it('cabinet not found', async () => {
         const fileCabinetId = '0';
         const response = await api.get(`/api/file-cabinet/${fileCabinetId}`);
         const { body, status } = response;
@@ -65,7 +66,7 @@ describe('GET /api/file-cabinet/:id', () => {
 });
 
 describe('POST /api/file-cabinet', () => {
-    it('creates a new state', async () => {
+    it('creates a new cabinet', async () => {
         const newFileCabinet = {
             name: 'Pasaporte',
             status: 'Activo',
@@ -78,7 +79,7 @@ describe('POST /api/file-cabinet', () => {
             .expect('Content-Type', /application\/json/);
     });
 
-    it('fails to create a new state', async () => {
+    it('fails to create a new cabinet', async () => {
         const newFileCabinet = {
             name: '',
         };
@@ -91,7 +92,7 @@ describe('POST /api/file-cabinet', () => {
 });
 
 describe('PUT /api/file-cabinet/:id', () => {
-    it('updates a state', async () => {
+    it('updates a cabinet', async () => {
         const fileCabinet = await models.FileCabinet.findOne();
         const newFileCabinet: FileCabinetCreationAttributes = {
             name: 'Pasaporte',
@@ -105,7 +106,7 @@ describe('PUT /api/file-cabinet/:id', () => {
             .expect('Content-Type', /application\/json/);
     });
 
-    it('fails to update a state', async () => {
+    it('fails to update a cabinet', async () => {
         const fileCabinet = await models.FileCabinet.findOne();
         const newFileCabinet = {
             name: '',
@@ -116,7 +117,7 @@ describe('PUT /api/file-cabinet/:id', () => {
             .expect(400)
             .expect('Content-Type', /application\/json/);
     });
-    it('not found extension', async () => {
+    it('not found cabinet', async () => {
         const fileCabinetId = '0';
         const newFileCabinet: FileCabinetCreationAttributes = {
             name: 'Notas certificadas',
@@ -132,7 +133,7 @@ describe('PUT /api/file-cabinet/:id', () => {
 });
 
 describe('DELETE /api/file-cabinet/:id', () => {
-    it('deletes a state', async () => {
+    it('deletes a cabinet', async () => {
         const fileCabinet = await models.FileCabinet.findOne();
         await api
             .delete(`/api/file-cabinet/${fileCabinet?.id}`)
@@ -146,7 +147,7 @@ describe('DELETE /api/file-cabinet/:id', () => {
         expect(deletedfileCabinet).toBeNull();
     });
 
-    it('fails to delete a state', async () => {
+    it('fails to delete a cabinet', async () => {
         const fileCabinetId = '01';
         await api
             .delete(`/api/file-cabinet/${fileCabinetId}`)

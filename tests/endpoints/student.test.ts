@@ -76,6 +76,12 @@ describe('GET /api/student', () => {
 
         expect(response.body.data.students).toHaveLength(initialStudents.length);
     });
+    it('returns the correct number of students', async () => {
+        const response = await api.get('/api/student');
+        const { students, pagination } = response.body.data;
+        expect(students).toHaveLength(initialStudents.length);
+        expect(pagination.totalItems).toBe(initialStudents.length);
+    });
 });
 
 describe('GET /api/student/:id', () => {

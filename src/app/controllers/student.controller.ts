@@ -13,8 +13,24 @@ const schemaStudent = z.object({
 class Student {
     static async getAll(req: Request, res: Response): Promise<void> {
         try {
-            const students = await models.Student.findAll({ include: { all: true } });
-            res.status(200).json({ data: { students } });
+            const { page = 1, limit = 10 } = req.query;
+            const pageNumber = parseInt(page as string, 10);
+            const limitNumber = parseInt(limit as string, 10);
+            const offset = (pageNumber - 1) * limitNumber;
+            const { count, rows } = await models.Student.findAndCountAll({ limit: limitNumber, offset: offset });
+
+            const totalPages = Math.ceil(count / limitNumber);
+            res.status(200).json({
+                data: {
+                    students: rows,
+                    pagination: {
+                        currentPage: pageNumber,
+                        totalPages: totalPages,
+                        totalItems: count,
+                        itemsPerPage: limitNumber,
+                    },
+                },
+            });
         } catch (error) {
             return handdleErrorsController(error, res, req);
         }
