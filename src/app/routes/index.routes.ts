@@ -14,7 +14,6 @@ import fileCabinetRoutes from './fileCabinet.routes';
 import levelRoutes from './level.routes';
 
 const router = express.Router();
-
 router.use('/admin', adminRoutes);
 router.use('/building', buildingRoutes);
 router.use('/core', coreRoutes);
@@ -27,6 +26,10 @@ router.use('/student', studentRoutes);
 router.use('/state', stateRoutes);
 router.use('/user', userRoutes);
 router.use('/pnf', pnfRoutes);
+
+router.use('/', (_req: Request, res: Response) => {
+    res.json({ message: 'Wellcome to api  ', version: '1.0.0' });
+});
 
 router.get('/health', (_req, res) => {
     res.status(200).json({
