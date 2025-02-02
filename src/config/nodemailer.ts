@@ -1,58 +1,88 @@
+import { domain, MAIL } from '@/constants';
 import { createTransport } from 'nodemailer';
 
 const transporter = createTransport({
+    service: 'gmail',
     host: 'gmail',
     port: 587,
     auth: {
-        user: '',
-        pass: '',
+        user: MAIL.MAIL_FROM_EMAIL,
+        pass: MAIL.MAIL_PASSWORD,
     },
 });
-
-export const htmlToken = (username: string, token: string): string => {
+export const htmlContainer = (content: string, username: string, subject: string): string => {
     return `
-<!DOCTYPE html>
-<html lang="es">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Restablecer Contraseña</title>
-    </head>
-    <body
+
+    <div
         style="
-            font-family: Arial, sans-serif;
-            color: #333;
-            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+
         ">
         <div
             style="
+                font-family: Arial, sans-serif;
+                color: #333;
                 background-color: #fff;
+                justify-content: center;
+                align-items: center;
+                margin: auto;
+                border: 1px solid #dbdbdb;
                 border-radius: 8px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 padding: 20px;
-                max-width: 400px;
+                max-width: 500px;
                 width: 100%;
-                text-align: center;
             ">
-            <h1 style="color: #4caf50">Hola ${username},</h1>
-            <p style="font-size: 16px; margin: 10px 0">
-                Recibimos una solicitud para restablecer tu contraseña. Usa el siguiente token para completar el
-                proceso:
-            </p>
-            <p style="font-size: 18px; font-weight: bold; color: #ff5722">Token: ${token}</p>
-            <p style="font-size: 16px; margin: 10px 0">Si no solicitaste esto, por favor ignora este correo.</p>
-            <div style="font-size: 12px; margin-top: 20px">
-                <p>&copy; 2025 Mi Empresa</p>
+            <div
+                style="
+                    text-align: center;
+                    width: 100%;
+                ">
+                <header>
+                    <div style="width:fit-content;margin: 0 auto;align-items: center; ">
+                        <img
+                            src="${domain}/images/logo.png"
+                            alt="MyDocs"
+                            style="display: block; margin: 0 auto; width: 60px" />
+                    </div>
+                    <h2 style="font-weight: 200; margin: 0">${subject}</h2>
+                    <p>Hola, ${username}.</p>
+                </header>
+                <hr style="width: 100%; border: 1px solid #dbdbdb; border-top: none" />
+                ${content}
+                <hr style="width: 100%; border: 1px solid #dbdbdb; border-top: none" />
+                <footer>
+                    <small style="color: #6e6e6e">
+                        &copy; ${new Date().getFullYear()} MyDocs. Todos los derechos reservados.
+                    </small>
+                </footer>
             </div>
         </div>
-    </body>
-</html>
-`;
+    </div>
+    `;
+};
+
+export const htmlToken = (username: string, token: string, subject: string): string => {
+    return `
+    ${htmlContainer(
+        `
+            <main style="font-size: 1rem">
+                <p>
+                    Debes ingresar este token dentro de los 30 días posteriores
+                    al registro para activar tu cuenta:
+                </p>
+                <b>Token : ${token} </b>
+                <p>Si no solicitaste un token de seguridad, ignora este mensaje.</p>
+            </main>
+        `,
+        username,
+        subject,
+    )}
+    `;
 };
 
 export default transporter;
