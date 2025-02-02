@@ -7,6 +7,7 @@ routes.get('/:id', User.getById);
 routes.post('/', User.create, (req, res) => {
     res.status(201).json({ message: 'Usuario creado exitosamente', data: req.body });
 });
+routes.post('/register', User.register);
 routes.put('/:id', User.update);
 routes.delete('/:id', User.delete);
 

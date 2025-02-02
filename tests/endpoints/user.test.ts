@@ -3,7 +3,7 @@ import { httpServer, app } from '@/app/app';
 import models from '@/app/models';
 import sequelize from '@/config/sequelize';
 import { UserCreationAttributes } from '@/app/models/User';
-
+import crypto from 'node:crypto';
 const api = request(app);
 
 const initialUsers: UserCreationAttributes[] = [
@@ -13,7 +13,7 @@ const initialUsers: UserCreationAttributes[] = [
         name: 'John',
         lastName: 'Doe',
         username: 'johndoe',
-        email: 'johndoe@example.com',
+        email: 'lucciano.angel@hotmail.com',
         phone: '123456789',
         password: 'password123',
         address: '123 Main St',
@@ -43,6 +43,7 @@ beforeAll(async () => {
 beforeEach(async () => {
     await models.User.destroy({ truncate: true, cascade: true });
     await models.Municipality.destroy({ truncate: true, cascade: true });
+    await models.Token.destroy({ truncate: true, cascade: true });
     const state = await models.State.create({
         name: 'State test',
     });
@@ -55,7 +56,13 @@ beforeEach(async () => {
     // Actualizar los municipalityId en los usuarios iniciales
     for (const user of initialUsers) {
         user.municipalityId = municipality?.dataValues.id;
-        await models.User.create(user);
+        const userCreate = await models.User.create(user);
+        const token = crypto.randomBytes(32).toString('hex');
+        await models.Token.create({
+            token,
+            userId: userCreate.id,
+            expiration: new Date(Date.now() + 86400000),
+        });
     }
 });
 
@@ -100,7 +107,7 @@ describe('POST /api/user', () => {
             name: 'New User',
             lastName: 'New LastName',
             username: 'newuser',
-            email: 'newuser@example.com',
+            email: 'luicciano.08.angel.2002@gmail.com',
             phone: '123123123',
             password: 'password123',
             address: '123 New St',
@@ -126,16 +133,85 @@ describe('POST /api/user', () => {
             dni: '',
             name: '',
             lastName: '',
-            username: '',
             email: 'invalidemail',
             phone: '123123123',
-            password: '123',
             address: 'Invalid Address',
             gender: 'Masculino',
         };
 
         const response = await api.post('/api/user').send(invalidUser).expect(400);
         expect(response.body.message).toBeDefined();
+    });
+});
+describe('POST /api/user/register', () => {
+    it('should register a user with a valid token', async () => {
+        const user = await models.User.findOne();
+        const token = crypto.randomBytes(32).toString('hex');
+        const tokenEntry = await models.Token.create({
+            token,
+            userId: user.id,
+            expiration: new Date(Date.now() + 86400000),
+        });
+        const res = await api
+            .post('/api/user/register')
+            .send({
+                token: tokenEntry.token,
+                username: 'new_user',
+                password: 'ValidPass123',
+            })
+            .expect(200);
+
+        expect(res.body.message).toBe('Registro completado correctamente');
+
+        const updatedUser = await models.User.findByPk(user.id);
+        expect(updatedUser.username).toBe('new_user');
+
+        const usedToken = await models.Token.findByPk(tokenEntry.id);
+        expect(usedToken.used).toBe(true);
+    });
+
+    it('should fail if token is invalid or expired', async () => {
+        const tokenEntry = await models.Token.findOne();
+        await tokenEntry.update({ used: true });
+
+        const res = await api
+            .post('/api/user/register')
+            .send({
+                token: tokenEntry.token,
+                username: 'new_user',
+                password: 'ValidPass123',
+            })
+            .expect(400);
+
+        expect(res.body.message).toBe('Token inválido o expirado');
+    });
+
+    it('should fail if username is already taken', async () => {
+        const user = await models.User.findOne();
+        const token = await models.Token.findOne();
+        const res = await api
+            .post('/api/user/register')
+            .send({
+                token: token?.dataValues.token,
+                username: user?.username,
+                password: 'ValidPass123',
+            })
+            .expect(400);
+
+        expect(res.body.message).toBe('El nombre de usuario ya está en uso');
+    });
+
+    it('should fail if request data is invalid', async () => {
+        const res = await api
+            .post('/api/user/register')
+            .send({
+                token: 'valid_token',
+                username: '',
+                password: '123',
+            })
+            .expect(400);
+
+        expect(res.body.message).toBe('Datos inválidos');
     });
 });
 
@@ -147,6 +223,7 @@ describe('PUT /api/user/:id', () => {
             name: 'Updated Name',
             lastName: 'Updated LastName',
             username: 'updateduser',
+            password: 'Test.2025',
         };
         await api
             .put(`/api/user/${user?.dataValues.id}`)

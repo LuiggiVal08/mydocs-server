@@ -13,6 +13,7 @@ import {
     Unique,
     BeforeCreate,
     HasOne,
+    BeforeUpdate,
 } from 'sequelize-typescript';
 import Municipality, { MunicipalityAttributes } from './Municipality';
 import Token, { TokenAttributes } from './Token';
@@ -29,10 +30,10 @@ interface UserAttributes {
     dni: string;
     name: NonNullable<string>;
     lastName: string;
-    username: string;
+    username: string | null;
     email: string;
     phone: string;
-    password: string;
+    password: string | null;
     address: string;
     gender: 'Masculino' | 'Femenino';
     dateOfBirth: Date;
@@ -89,7 +90,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
     @Column(DataType.STRING)
     declare lastName: string;
 
-    @AllowNull(false)
+    @AllowNull(true)
     @Unique
     @Column(DataType.STRING)
     declare username: string;
@@ -104,7 +105,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
     @Column(DataType.STRING)
     declare phone: string;
 
-    @AllowNull(false)
+    @AllowNull(true)
     @Column(DataType.STRING)
     declare password: string;
 
@@ -146,9 +147,12 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
     @HasMany(() => Session, { onDelete: 'CASCADE' })
     sessions: Session[];
 
+    @BeforeUpdate
     @BeforeCreate
     static async hashPassword(user: User) {
-        user.password = await hashPassword(user.password);
+        if (user.password && user.changed('password')) {
+            user.password = await hashPassword(user.password);
+        }
     }
 }
 

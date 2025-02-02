@@ -109,10 +109,10 @@ describe('POST /student/', () => {
             dni: '123456781',
             name: 'John',
             lastName: 'Doe',
-            username: 'johndoe_2',
+            username: null,
             email: 'johndoe2@example.com',
             phone: '0423456789',
-            password: 'password123',
+            password: null,
             address: '123 Main St',
             municipalityId: municipality?.dataValues.id,
             gender: 'Masculino',
@@ -140,13 +140,11 @@ describe('POST /student/', () => {
         const invalidUser = {
             dni: '', // Campo inválido
             name: '',
-            username: '',
             email: 'invalidemail',
             phone: '123123123',
-            password: '123', // Demasiado corto
             address: 'Invalid Address',
             gender: 'Masculino',
-            dateOfBirth: 'Invalid Date', // Fecha inválida
+            dateOfBirth: new Date(), // Fecha inválida
         };
 
         const newStudent = {
@@ -161,14 +159,14 @@ describe('POST /student/', () => {
     });
 
     it('returns 404 if municipality does not exist', async () => {
-        const newUser = {
+        const newUser: UserCreationAttributes = {
             dni: '12345678',
             name: 'John',
             lastName: 'Doe',
-            username: 'johndoe',
+            username: null,
             email: 'johndoe@example.com',
             phone: '123456789',
-            password: 'password123',
+            password: null,
             address: '123 Main St',
             municipalityId: 'non-existent-id',
             gender: 'Masculino',
