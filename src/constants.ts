@@ -4,8 +4,10 @@ import type { UserSocketMap } from '@/types/io';
 import type { ConnectionDB } from '@/types/dbConn';
 
 config();
-export const { PORT, APP_SECRET, JWT_SECRET, JWT_REFRESH_SECRET, NODE_ENV, DATABASE_URL } = envVar.parse(process.env);
+export const { PORT, APP_SECRET, JWT_SECRET, JWT_REFRESH_SECRET, NODE_ENV, DATABASE_URL, NAME_APP, ...MAIL } =
+    envVar.parse(process.env);
 
+export const domain = NODE_ENV === 'production' ? 'https://mydocs.up.railway.app' : 'https://mydocs.up.railway.app';
 export const ABORT_DELAY = 10000;
 export const ACCESS_TOKEN_EXPIRY = '15m';
 export const REFRESH_TOKEN_EXPIRY = '7d';
