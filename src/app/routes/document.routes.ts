@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import Document from '@/app/controllers/document.controller';
+import { isAuthenticated } from '../middlewares';
 
 const route = Router();
 
-route.get('/', Document.getAll);
-route.get('/:id', Document.getById);
-route.post('/', Document.create);
-route.put('/:id', Document.update);
-route.delete('/:id', Document.delete);
+route.get('/', isAuthenticated, Document.getAll);
+route.get('/:id', isAuthenticated, Document.getById);
+route.post('/', isAuthenticated, Document.create);
+route.put('/:id', isAuthenticated, Document.update);
+route.delete('/:id', isAuthenticated, Document.delete);
 
 export default route;

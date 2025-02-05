@@ -12,9 +12,12 @@ import extensionRoutes from './extension.routes';
 import documentRoutes from './document.routes';
 import fileCabinetRoutes from './fileCabinet.routes';
 import levelRoutes from './level.routes';
+import AuthRoutes from './auth.routes';
+import RoleRoutes from './role.routes';
 
 const router = express.Router();
 router.use('/admin', adminRoutes);
+router.use('/auth', AuthRoutes);
 router.use('/building', buildingRoutes);
 router.use('/core', coreRoutes);
 router.use('/document', documentRoutes);
@@ -26,8 +29,9 @@ router.use('/student', studentRoutes);
 router.use('/state', stateRoutes);
 router.use('/user', userRoutes);
 router.use('/pnf', pnfRoutes);
+router.use('/role', RoleRoutes);
 
-router.use('/', (_req: Request, res: Response) => {
+router.get('/', (_req: Request, res: Response) => {
     res.json({ message: 'Wellcome to api  ', version: '1.0.0' });
 });
 
