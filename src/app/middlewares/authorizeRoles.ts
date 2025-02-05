@@ -16,13 +16,15 @@ const authorizeRoles =
      * @param {Response} res - Objeto de respuesta HTTP.
      * @param {NextFunction} next - Función de middleware para pasar el control al siguiente middleware.
      */
-    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userRole = await models.Role.findByPk(req.user.roleId);
             const roleName = userRole.dataValues.name.toLocaleLowerCase();
             allowedRoles = allowedRoles.map((role) => role.toLowerCase());
             if (!allowedRoles.includes(roleName)) {
-                res.status(403).json({ message: 'Acceso denegado: No tienes permiso para realizar esta acción' });
+                return void res
+                    .status(403)
+                    .json({ message: 'Acceso denegado: No tienes permiso para realizar esta acción' });
             }
             next();
         } catch (error) {

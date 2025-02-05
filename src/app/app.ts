@@ -28,7 +28,7 @@ app.use('/api', express.json());
 app.use('/api', express.urlencoded({ extended: true }));
 app.use('/api', cookieParser(APP_SECRET));
 app.use('/api', cors(corsConfig));
-app.use('/api', csrf({ excludedRoutes: ['/api/login', '/api/logout', '/health'] }));
+app.use('/api', csrf({ excludedRoutes: ['/api/auth/login/admin', '/api/auth/logout'] }));
 app.use('/api/', router);
 
 export { app, httpServer };
