@@ -73,7 +73,7 @@ describe('jwt', () => {
 
         expect(token).toBe(mockToken);
         expect(jsonwebtoken.sign).toHaveBeenCalledWith(payload, JWT_SECRET, {
-            expiresIn: '15m',
+            expiresIn: '7d',
             algorithm: 'HS256',
         });
     });
