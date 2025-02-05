@@ -1,7 +1,6 @@
 import type { Request, Response } from 'express';
 import z from 'zod';
 import models from '@/app/models';
-import logger from '@/config/logger';
 import handdleErrorsController from '@/helpers/handdleErrorsController';
 
 const schemaStudent = z.object({
@@ -80,14 +79,10 @@ class Student {
             }
             const parsed = schemaStudent.safeParse(body);
             if (!parsed.success) {
-                logger.error(parsed.error);
                 res.status(400).json({ message: parsed.error.message });
                 return;
             }
-            const updateStudent = {
-                ...student.dataValues,
-                ...parsed.data,
-            };
+            const updateStudent = { ...student.dataValues, ...parsed.data };
             await student.update(updateStudent);
             res.status(200).json({ data: { student } });
         } catch (error) {

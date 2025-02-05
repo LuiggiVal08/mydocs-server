@@ -1,8 +1,10 @@
 import models from '@/app/models';
+// import logger from '@/config/logger';
 import handdleErrorsController from '@/helpers/handdleErrorsController';
 import type { AuthenticatedRequest } from '@/types/auth';
 import type { Request, Response } from 'express';
 import { z } from 'zod';
+import { UserCreationAttributes } from '../models/User';
 
 const AdminSchema = z.object({
     userId: z.string(),
@@ -17,7 +19,11 @@ class Admin {
             const pageNumber = parseInt(page as string, 10);
             const limitNumber = parseInt(limit as string, 10);
             const offset = (pageNumber - 1) * limitNumber;
-            const { count, rows } = await models.Administrator.findAndCountAll({ limit: limitNumber, offset: offset });
+            const { count, rows } = await models.Administrator.findAndCountAll({
+                include: [models.User, models.Role],
+                limit: limitNumber,
+                offset: offset,
+            });
             const totalPages = Math.ceil(count / limitNumber);
 
             res.status(200).json({
@@ -106,7 +112,37 @@ class Admin {
             return handdleErrorsController(error, res, req);
         }
     }
+    static async setup(req: Request, res: Response): Promise<void> {
+        try {
+            const [role, create] = await models.Role.findOrCreate({
+                where: { name: 'dev' },
+                defaults: { name: 'dev' },
+            });
+            if (!create) {
+                res.status(400).json({ message: 'Rol desarrollador ya esta registrado' });
+            }
+            const optionUser: UserCreationAttributes = {
+                name: 'Develop',
+                lastName: 'Default',
+                username: 'admin_default',
+                password: 'Admin.123',
+                dni: '99999999',
+                phone: '123456789',
+                address: '123 Main St',
+                gender: 'Masculino',
+                email: 'luisangelvalenciavalera@gmail.com',
+                municipalityId: null,
+                dateOfBirth: new Date(),
+            };
 
+            const user = await models.User.create(optionUser);
+            const admin = await models.Administrator.create({ userId: user.id, status: 'Activo', roleId: role.id });
+
+            res.status(201).json({ message: 'Administrador por defecto creado', data: { admin } });
+        } catch (error) {
+            return handdleErrorsController(error, res, req);
+        }
+    }
     static async delete(req: Request, res: Response): Promise<void> {
         const { id } = req.params;
         try {
