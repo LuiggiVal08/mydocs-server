@@ -35,6 +35,7 @@ class Session extends Model<SessionAttributes, SessionCreationAttributes> {
     @Column(DataType.STRING(45))
     declare ip: string;
 
+    @Default(DataType.NOW)
     @Column(DataType.DATE)
     declare start: Date;
 
