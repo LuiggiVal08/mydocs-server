@@ -13,3 +13,11 @@ export const hashPassword = async (pass: string): Promise<string> => {
     const salt = await bcrypt.genSalt(numberSalt);
     return await bcrypt.hash(pass, salt);
 };
+
+export const comparePassword = async (pass: string, hash: string): Promise<boolean> => {
+    if (!pass || pass === '') {
+        throw new Error('Password must be a non-empty string');
+    }
+    pass = pass.trim();
+    return await bcrypt.compare(pass, hash);
+};
