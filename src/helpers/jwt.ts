@@ -10,14 +10,18 @@ import jsonwebtoken from 'jsonwebtoken';
  */
 type JWT = (payload: string | object | Buffer, type: 'access' | 'refresh') => Promise<string>;
 
-const jwt: JWT = async (payload) => {
+const jwt: JWT = async (payload, type): Promise<string> => {
+    if (!type) {
+        throw new Error('Type is required');
+    }
     if (!payload) {
         throw new Error('Payload is required');
     }
-    return jsonwebtoken.sign(payload, JWT_SECRET, {
-        expiresIn: '15m',
+    const token = await jsonwebtoken.sign(payload, JWT_SECRET, {
+        expiresIn: type === 'access' ? '15m' : '7d',
         algorithm: 'HS256',
     });
+    return token;
 };
 
 export default jwt;
