@@ -11,6 +11,9 @@ env:
     JWT_SECRET: ${{ secrets.JWT_SECRET }}
     JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
     DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    NAME_APP: 'MyDocs'
+    MAIL_FROM_EMAIL=${{ secrets.MAIL_FROM_EMAIL }}
+    MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
 
 jobs:
     avoid_redundancy:
