@@ -150,6 +150,15 @@ describe('POST /api/admin', () => {
         expect(response.body.message).toBeDefined();
     });
 });
+describe('POST /api/admin/setup', () => {
+    it('creates a new admin', async () => {
+        const response = await api
+            .post('/api/admin/setup')
+            .expect(201)
+            .expect('Content-Type', /application\/json/);
+        expect(response.body.message).toBe('Administrador por defecto creado');
+    });
+});
 
 describe('PUT /api/admin/:id', () => {
     it('updates an existing admin', async () => {
